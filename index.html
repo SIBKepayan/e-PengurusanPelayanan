@@ -6,6 +6,7 @@
     <title>Sistem e-Pengurusan Pelayanan SIB Kepayan</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
@@ -73,7 +74,6 @@
                         </div>
                         <button class="btn-primary" onclick="exportWeeklyPDF()"><i class="fas fa-file-pdf"></i> Export PDF Buletin</button>
                     </div>
-
                     <div id="weekly-schedule-container">
                         <div class="schedule-placeholder">Sila pilih tarikh untuk melihat jadual minggu berkenaan.</div>
                     </div>
@@ -81,17 +81,17 @@
 
                 <div id="tab-urus-tim" class="content-tab">
                     <h3>Pengurusan Data Tim Pelayanan</h3>
-                    
                     <div class="card-form">
                         <h4>Tambah / Kemaskini Ahli Tim</h4>
                         <form id="teamForm">
-                            <input type="hidden" id="teamMemberId"> <div class="form-row">
+                            <input type="hidden" id="teamMemberId"> 
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label>Nama Penuh</label>
                                     <input type="text" id="teamName" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>No. Telefon</label>
+                                    <label>No. Telefon (ID Login)</label>
                                     <input type="text" id="teamPhone" required>
                                 </div>
                             </div>
@@ -125,16 +125,10 @@
                             </div>
                         </form>
                     </div>
-
                     <div class="table-responsive">
                         <table id="teamTable">
                             <thead>
-                                <tr>
-                                    <th>Nama</th>
-                                    <th>Jawatan</th>
-                                    <th>Status</th>
-                                    <th>Tindakan</th>
-                                </tr>
+                                <tr><th>Nama</th><th>Jawatan</th><th>Status</th><th>Tindakan</th></tr>
                             </thead>
                             <tbody></tbody>
                         </table>
@@ -145,14 +139,13 @@
                     <div class="tab-switcher">
                         <button class="btn-secondary active" onclick="switchSubTab('sub-ahad')">Ibadah Umum Ahad</button>
                         <button class="btn-secondary" onclick="switchSubTab('sub-doa')">Persekutuan Doa</button>
-                        <button class="btn-secondary" onclick="switchSubTab('sub-khas')">Ibadah Khas / Perayaan</button>
+                        <button class="btn-secondary" onclick="switchSubTab('sub-khas')">Ibadah Khas</button>
                     </div>
 
                     <div id="sub-ahad" class="sub-tab active">
                         <form id="formAhad">
                             <h4>Jadual Ibadah Umum Ahad</h4>
                             <div class="form-group"><label>Tarikh</label><input type="date" id="dateAhad" required></div>
-                            
                             <div class="form-row">
                                 <div class="form-group"><label>Pimpin Ibadah</label><select class="member-select" id="valAhadLeader"></select></div>
                                 <div class="form-group"><label>Pimpin Pujian</label><select class="member-select" id="valAhadWorship"></select></div>
@@ -162,16 +155,14 @@
                                 <div class="form-group"><label>Doa PKK</label><select class="member-select" id="valAhadDoaPKK"></select></div>
                             </div>
                             <div class="form-group"><label>Penyambut Tetamu</label><select class="member-select" id="valAhadUsher"></select></div>
-
                             <div class="form-group checkbox-group">
                                 <input type="checkbox" id="checkPerjamuan" onchange="togglePerjamuan()">
                                 <label>Ada Perjamuan Kudus?</label>
                             </div>
                             <div id="divPerjamuan" class="hidden form-row">
-                                <div class="form-group"><label>Perjamuan Kudus (Ketua)</label><select class="member-select" id="valAhadPK"></select></div>
+                                <div class="form-group"><label>Ketua PK</label><select class="member-select" id="valAhadPK"></select></div>
                                 <div class="form-group"><label>Pembantu PK</label><select class="member-select" id="valAhadAsstPK"></select></div>
                             </div>
-
                             <fieldset>
                                 <legend>Pembacaan Alkitab</legend>
                                 <div class="form-row">
@@ -189,7 +180,7 @@
 
                     <div id="sub-doa" class="sub-tab hidden">
                         <form id="formDoa">
-                            <h4>Jadual Persekutuan Doa (Jumaat)</h4>
+                            <h4>Jadual Persekutuan Doa</h4>
                             <div class="form-group"><label>Tarikh</label><input type="date" id="dateDoa" required></div>
                             <div class="form-group checkbox-group">
                                 <input type="checkbox" id="checkNoDoa" onchange="toggleDoaAlt()">
@@ -201,7 +192,7 @@
                                 <div class="form-group"><label>Renungan</label><select class="member-select" id="valDoaSharer"></select></div>
                             </div>
                             <div id="divDoaAlt" class="hidden">
-                                <div class="form-group"><label>Nama Aktiviti (Optional)</label><input type="text" id="valDoaActivity" placeholder="Cth: Gabungan Zon"></div>
+                                <div class="form-group"><label>Nama Aktiviti</label><input type="text" id="valDoaActivity"></div>
                             </div>
                             <button type="submit" class="btn-primary">Simpan Jadual Doa</button>
                         </form>
@@ -209,9 +200,9 @@
 
                     <div id="sub-khas" class="sub-tab hidden">
                         <form id="formKhas">
-                            <h4>Ibadah Khas / Perayaan Gereja</h4>
+                            <h4>Ibadah Khas / Perayaan</h4>
                             <div class="form-row">
-                                <div class="form-group"><label>Nama Ibadah/Perayaan</label><input type="text" id="valKhasName" placeholder="Cth: Jumaat Agung" required></div>
+                                <div class="form-group"><label>Nama Perayaan</label><input type="text" id="valKhasName" required></div>
                                 <div class="form-group"><label>Tarikh</label><input type="date" id="dateKhas" required></div>
                             </div>
                             <div class="form-row">
@@ -222,8 +213,8 @@
                                 <div class="form-group"><label>Khotbah</label><select class="member-select" id="valKhasSpeaker"></select></div>
                                 <div class="form-group"><label>Doa PKK</label><select class="member-select" id="valKhasDoaPKK"></select></div>
                             </div>
-                            <div class="form-group"><label>Nota Tambahan</label><textarea id="valKhasNote" rows="3"></textarea></div>
-                            <button type="submit" class="btn-primary">Simpan Jadual Khas</button>
+                            <div class="form-group"><label>Nota</label><textarea id="valKhasNote"></textarea></div>
+                            <button type="submit" class="btn-primary">Simpan</button>
                         </form>
                     </div>
                 </div>
@@ -243,23 +234,19 @@
                             </div>
                             <div class="form-group"><label>Tarikh</label><input type="date" id="dateCabang" required></div>
                         </div>
-
                         <div id="fieldsStandard">
-                            <div class="form-group"><label>Jenis Aktiviti</label><input type="text" id="valCabangActivity" placeholder="Cth: Ibadah / Sukan"></div>
-                            <div class="form-group"><label>Pimpin Pujian</label><select class="member-select" id="valCabangPujian"></select></div>
+                            <div class="form-group"><label>Aktiviti</label><input type="text" id="valCabangActivity"></div>
+                            <div class="form-group"><label>Pujian</label><select class="member-select" id="valCabangPujian"></select></div>
                             <div class="form-group"><label>Renungan</label><select class="member-select" id="valCabangRenungan"></select></div>
                         </div>
-
                         <div id="fieldsKids" class="hidden">
-                            <div class="form-group"><label>Guru Kelas Besar</label><select class="member-select" id="valKidsBig"></select></div>
-                            <div class="form-group"><label>Guru Kelas Tengah</label><select class="member-select" id="valKidsMid"></select></div>
-                            <div class="form-group"><label>Guru Kelas Kecil</label><select class="member-select" id="valKidsSmall"></select></div>
+                            <div class="form-group"><label>Kelas Besar</label><select class="member-select" id="valKidsBig"></select></div>
+                            <div class="form-group"><label>Kelas Tengah</label><select class="member-select" id="valKidsMid"></select></div>
+                            <div class="form-group"><label>Kelas Kecil</label><select class="member-select" id="valKidsSmall"></select></div>
                         </div>
-
                         <button type="submit" class="btn-primary">Simpan Jadual Cabang</button>
                     </form>
                 </div>
-
             </main>
         </div>
     </section>
