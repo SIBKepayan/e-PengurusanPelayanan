@@ -1,4 +1,3 @@
-// --- IMPORT & CONFIG ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -18,6 +17,15 @@ const db = getFirestore(app);
 let currentUser = null;
 let currentTeam = [];
 
+// --- AUTO LOGIN (FIX REFRESH ISSUE) ---
+window.addEventListener('DOMContentLoaded', () => {
+    const savedUser = localStorage.getItem('sib_user');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        initDashboard();
+    }
+});
+
 // --- LOGIN ---
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -28,7 +36,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
     try {
         if (loginId === "admin" && pass === "admin123") {
-            loginSuccess({ name: "Super Admin", role: "admin", id: "temp_admin" });
+            performLogin({ name: "Super Admin", role: "admin", id: "temp_admin" });
             return;
         }
 
@@ -36,9 +44,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const snapshot = await getDocs(q);
 
         if (snapshot.empty) {
-            alert("ID tiada. Admin sila guna: admin / admin123");
-            btn.textContent = "LOG MASUK"; btn.disabled = false;
-            return;
+            alert("ID tidak ditemui."); btn.textContent = "LOG MASUK"; btn.disabled = false; return;
         }
 
         let userFound = false;
@@ -48,7 +54,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             if (userPass === pass) {
                 userFound = true;
                 data.id = doc.id;
-                loginSuccess(data);
+                performLogin(data);
             }
         });
 
@@ -56,18 +62,23 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     } catch (err) { alert("Ralat: " + err.message); btn.textContent = "LOG MASUK"; btn.disabled = false; }
 });
 
-function loginSuccess(user) {
+function performLogin(user) {
     currentUser = user;
+    localStorage.setItem('sib_user', JSON.stringify(user)); // SIMPAN SESI
+    initDashboard();
+}
+
+function initDashboard() {
     document.getElementById('auth-page').classList.remove('active');
     const dashboard = document.getElementById('dashboard-page');
     dashboard.classList.remove('hidden');
     dashboard.classList.add('active');
     
-    document.getElementById('username-display').textContent = user.name;
-    document.getElementById('user-role-display').textContent = user.role.toUpperCase();
+    document.getElementById('username-display').textContent = currentUser.name;
+    document.getElementById('user-role-display').textContent = currentUser.role.toUpperCase();
 
     const adminMenus = document.querySelectorAll('.admin-only');
-    if (user.role !== 'admin') adminMenus.forEach(el => el.classList.add('hidden'));
+    if (currentUser.role !== 'admin') adminMenus.forEach(el => el.classList.add('hidden'));
     else adminMenus.forEach(el => el.classList.remove('hidden'));
 
     showTab('tab-home'); 
@@ -76,7 +87,10 @@ function loginSuccess(user) {
     loadWeeklySchedule();
 }
 
-window.logout = function() { location.reload(); }
+window.logout = function() {
+    localStorage.removeItem('sib_user');
+    location.reload();
+}
 
 // --- NAV ---
 window.showTab = function(tabId) {
@@ -96,7 +110,7 @@ window.switchSubTab = function(subId) {
     event.target.classList.add('active');
 }
 
-// --- TEAM & PASSWORD ---
+// --- DATA ---
 window.loadTeamData = async function() {
     const tbody = document.querySelector('#teamTable tbody');
     const selects = document.querySelectorAll('.member-select');
@@ -123,77 +137,30 @@ window.loadTeamData = async function() {
     } catch(e){}
 }
 
+// CRUD Team & Password logic... (Singkatkan sebab had karakter, guna logic sama)
 document.getElementById('teamForm').addEventListener('submit', async(e)=>{
     e.preventDefault();
     const id = document.getElementById('teamMemberId').value;
     const data = { name: document.getElementById('teamName').value, phone: document.getElementById('teamPhone').value, role: document.getElementById('teamRole').value, status: document.getElementById('teamStatus').value };
-    try {
-        if(id) await updateDoc(doc(db,"team",id),data); else await addDoc(collection(db,"team"),data);
-        alert("Disimpan!"); document.getElementById('teamForm').reset(); loadTeamData();
-    } catch(e){alert(e.message)}
+    try { if(id) await updateDoc(doc(db,"team",id),data); else await addDoc(collection(db,"team"),data); alert("Disimpan!"); document.getElementById('teamForm').reset(); loadTeamData(); } catch(e){alert(e.message)}
 });
-
 document.getElementById('formPassword').addEventListener('submit', async(e)=>{
-    e.preventDefault();
-    const newPass = document.getElementById('newPassword').value;
-    if(!currentUser.id) return;
-    try {
-        await updateDoc(doc(db,"team",currentUser.id), { password: newPass });
-        alert("Kata laluan ditukar! Sila login semula."); logout();
-    } catch(e){alert(e.message)}
+    e.preventDefault(); const newPass = document.getElementById('newPassword').value; if(!currentUser.id) return;
+    try { await updateDoc(doc(db,"team",currentUser.id), { password: newPass }); alert("Ditukar! Sila login."); logout(); } catch(e){alert(e.message)}
 });
-
-window.editTeam = function(id) {
-    const m = currentTeam.find(x=>x.id===id);
-    if(m) {
-        document.getElementById('teamMemberId').value=m.id; document.getElementById('teamName').value=m.name;
-        document.getElementById('teamPhone').value=m.phone; document.getElementById('teamRole').value=m.role;
-        document.getElementById('teamStatus').value=m.status;
-    }
-}
+window.editTeam = function(id) { const m = currentTeam.find(x=>x.id===id); if(m){ document.getElementById('teamMemberId').value=m.id; document.getElementById('teamName').value=m.name; document.getElementById('teamPhone').value=m.phone; document.getElementById('teamRole').value=m.role; document.getElementById('teamStatus').value=m.status; } }
 window.deleteTeam = async function(id) { if(confirm("Padam?")) { await deleteDoc(doc(db,"team",id)); loadTeamData(); } }
 
 // --- SAVE SCHEDULE ---
 async function saveSch(data) {
-    try { await addDoc(collection(db,"schedules"),data); alert("Disimpan!"); document.querySelectorAll('form').forEach(f=>f.reset()); loadWeeklySchedule(); }
-    catch(e){alert(e.message)}
+    try { await addDoc(collection(db,"schedules"),data); alert("Disimpan!"); document.querySelectorAll('form').forEach(f=>f.reset()); loadWeeklySchedule(); } catch(e){alert(e.message)}
 }
+document.getElementById('formAhad').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'IBADAH_AHAD', date:document.getElementById('dateAhad').value, leader:document.getElementById('valAhadLeader').value, worship:document.getElementById('valAhadWorship').value, speaker:document.getElementById('valAhadSpeaker').value, doaPkk:document.getElementById('valAhadDoaPKK').value, usher:document.getElementById('valAhadUsher').value, hasPerjamuan:document.getElementById('checkPerjamuan').checked, pkLeader:document.getElementById('valAhadPK').value, pkAsst:document.getElementById('valAhadAsstPK').value, bibleOT:`${document.getElementById('valReaderOT').value} (${document.getElementById('valVerseOT').value})`, bibleNT:`${document.getElementById('valReaderNT').value} (${document.getElementById('valVerseNT').value})` })});
+document.getElementById('formKhas').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'IBADAH_KHAS', eventName:document.getElementById('valKhasName').value, date:document.getElementById('dateKhas').value, leader:document.getElementById('valKhasLeader').value, worship:document.getElementById('valKhasWorship').value, speaker:document.getElementById('valKhasSpeaker').value, doaPkk:document.getElementById('valKhasDoaPKK').value, usher:document.getElementById('valKhasUsher').value, hasPerjamuan:document.getElementById('checkPerjamuanKhas').checked, pkLeader:document.getElementById('valKhasPK').value, pkAsst:document.getElementById('valKhasAsstPK').value, bibleOT:`${document.getElementById('valKhasReaderOT').value} (${document.getElementById('valKhasVerseOT').value})`, bibleNT:`${document.getElementById('valKhasReaderNT').value} (${document.getElementById('valKhasVerseNT').value})`, note:document.getElementById('valKhasNote').value })});
+document.getElementById('formDoa').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'PERSEKUTUAN_DOA', date:document.getElementById('dateDoa').value, isSkipped:document.getElementById('checkNoDoa').checked, activityAlt:document.getElementById('valDoaActivity').value, leader:document.getElementById('valDoaLeader').value, material:document.getElementById('valDoaMaterial').value, sharer:document.getElementById('valDoaSharer').value })});
+document.getElementById('formCabang').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'CABANG', subType:document.getElementById('valCabangType').value, date:document.getElementById('dateCabang').value, activity:document.getElementById('valCabangActivity').value, pujian:document.getElementById('valCabangPujian').value, renungan:document.getElementById('valCabangRenungan').value, kidBig:document.getElementById('valKidsBig').value, kidMid:document.getElementById('valKidsMid').value, kidSmall:document.getElementById('valKidsSmall').value })});
 
-document.getElementById('formAhad').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({
-    type:'IBADAH_AHAD', date:document.getElementById('dateAhad').value,
-    leader:document.getElementById('valAhadLeader').value, worship:document.getElementById('valAhadWorship').value,
-    speaker:document.getElementById('valAhadSpeaker').value, doaPkk:document.getElementById('valAhadDoaPKK').value,
-    usher:document.getElementById('valAhadUsher').value, hasPerjamuan:document.getElementById('checkPerjamuan').checked,
-    pkLeader:document.getElementById('valAhadPK').value, pkAsst:document.getElementById('valAhadAsstPK').value,
-    bibleOT:`${document.getElementById('valReaderOT').value} (${document.getElementById('valVerseOT').value})`,
-    bibleNT:`${document.getElementById('valReaderNT').value} (${document.getElementById('valVerseNT').value})`
-})});
-
-document.getElementById('formKhas').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({
-    type:'IBADAH_KHAS', eventName:document.getElementById('valKhasName').value, date:document.getElementById('dateKhas').value,
-    leader:document.getElementById('valKhasLeader').value, worship:document.getElementById('valKhasWorship').value,
-    speaker:document.getElementById('valKhasSpeaker').value, doaPkk:document.getElementById('valKhasDoaPKK').value,
-    usher:document.getElementById('valKhasUsher').value, hasPerjamuan:document.getElementById('checkPerjamuanKhas').checked,
-    pkLeader:document.getElementById('valKhasPK').value, pkAsst:document.getElementById('valKhasAsstPK').value,
-    bibleOT:`${document.getElementById('valKhasReaderOT').value} (${document.getElementById('valKhasVerseOT').value})`,
-    bibleNT:`${document.getElementById('valKhasReaderNT').value} (${document.getElementById('valKhasVerseNT').value})`,
-    note:document.getElementById('valKhasNote').value
-})});
-
-document.getElementById('formDoa').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({
-    type:'PERSEKUTUAN_DOA', date:document.getElementById('dateDoa').value, isSkipped:document.getElementById('checkNoDoa').checked,
-    activityAlt:document.getElementById('valDoaActivity').value, leader:document.getElementById('valDoaLeader').value,
-    material:document.getElementById('valDoaMaterial').value, sharer:document.getElementById('valDoaSharer').value
-})});
-
-document.getElementById('formCabang').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({
-    type:'CABANG', subType:document.getElementById('valCabangType').value, date:document.getElementById('dateCabang').value,
-    activity:document.getElementById('valCabangActivity').value, pujian:document.getElementById('valCabangPujian').value,
-    renungan:document.getElementById('valCabangRenungan').value, kidBig:document.getElementById('valKidsBig').value,
-    kidMid:document.getElementById('valKidsMid').value, kidSmall:document.getElementById('valKidsSmall').value
-})});
-
-// --- LOAD VIEW ---
+// --- LOAD WEEKLY VIEW (TABLE FIX) ---
 function getWeekRange(d) {
     const c=new Date(d); const f=c.getDate()-c.getDay()+1; const l=f+6;
     return { mon:new Date(c.setDate(f)).toISOString().split('T')[0], sun:new Date(c.setDate(l)).toISOString().split('T')[0] };
@@ -216,32 +183,50 @@ window.loadWeeklySchedule = async function() {
             const d = doc.data();
             let title="", rows="";
             
+            // Generate Table Rows
             if(d.type==='IBADAH_AHAD') {
                 title="IBADAH UMUM AHAD";
-                rows += mkRow("Pimpin Ibadah",d.leader) + mkRow("Pujian",d.worship) + mkRow("Khotbah",d.speaker) + mkRow("Doa PKK",d.doaPkk) + mkRow("Usher",d.usher);
-                if(d.hasPerjamuan) rows += mkRow("Perjamuan", `${d.pkLeader} / ${d.pkAsst}`);
-                rows += mkRow("Alkitab", `PL: ${d.bibleOT}<br>PB: ${d.bibleNT}`);
+                rows = `
+                <tr><td width="30%"><b>Pimpin</b></td><td>${d.leader}</td></tr>
+                <tr><td><b>Pujian</b></td><td>${d.worship}</td></tr>
+                <tr><td><b>Khotbah</b></td><td>${d.speaker}</td></tr>
+                <tr><td><b>Doa PKK</b></td><td>${d.doaPkk}</td></tr>
+                <tr><td><b>Usher</b></td><td>${d.usher}</td></tr>
+                ${d.hasPerjamuan ? `<tr><td><b>Perjamuan</b></td><td>${d.pkLeader} / ${d.pkAsst}</td></tr>` : ''}
+                <tr><td><b>Alkitab</b></td><td>PL: ${d.bibleOT}<br>PB: ${d.bibleNT}</td></tr>`;
             } else if(d.type==='IBADAH_KHAS') {
                 title=d.eventName.toUpperCase();
-                rows += mkRow("Pimpin",d.leader) + mkRow("Pujian",d.worship) + mkRow("Khotbah",d.speaker) + mkRow("Doa PKK",d.doaPkk) + mkRow("Usher",d.usher);
-                if(d.hasPerjamuan) rows += mkRow("Perjamuan", `${d.pkLeader} / ${d.pkAsst}`);
-                rows += mkRow("Alkitab", `PL: ${d.bibleOT}<br>PB: ${d.bibleNT}`) + mkRow("Nota",d.note);
+                rows = `
+                <tr><td><b>Pimpin</b></td><td>${d.leader}</td></tr>
+                <tr><td><b>Pujian</b></td><td>${d.worship}</td></tr>
+                <tr><td><b>Khotbah</b></td><td>${d.speaker}</td></tr>
+                <tr><td><b>Usher</b></td><td>${d.usher}</td></tr>
+                <tr><td><b>Nota</b></td><td>${d.note}</td></tr>`;
             } else if(d.type==='PERSEKUTUAN_DOA') {
                 title="PERSEKUTUAN DOA";
-                rows += d.isSkipped ? mkRow("Catatan",d.activityAlt) : (mkRow("Pimpin",d.leader)+mkRow("Bahan",d.material)+mkRow("Renungan",d.sharer));
+                rows = d.isSkipped ? `<tr><td><b>Status</b></td><td>${d.activityAlt}</td></tr>` : 
+                `<tr><td><b>Pimpin</b></td><td>${d.leader}</td></tr>
+                 <tr><td><b>Bahan</b></td><td>${d.material}</td></tr>
+                 <tr><td><b>Renungan</b></td><td>${d.sharer}</td></tr>`;
             } else if(d.type==='CABANG') {
                 title=d.subType.toUpperCase();
-                if(d.subType==='Kanak-Kanak') rows += mkRow("Kelas Besar",d.kidBig)+mkRow("Tengah",d.kidMid)+mkRow("Kecil",d.kidSmall);
-                else rows += mkRow("Aktiviti",d.activity)+mkRow("Pujian",d.pujian)+mkRow("Renungan",d.renungan);
+                rows = d.subType==='Kanak-Kanak' ? 
+                `<tr><td><b>Besar</b></td><td>${d.kidBig}</td></tr><tr><td><b>Tengah</b></td><td>${d.kidMid}</td></tr><tr><td><b>Kecil</b></td><td>${d.kidSmall}</td></tr>` :
+                `<tr><td><b>Aktiviti</b></td><td>${d.activity}</td></tr><tr><td><b>Pujian</b></td><td>${d.pujian}</td></tr><tr><td><b>Renungan</b></td><td>${d.renungan}</td></tr>`;
             }
 
-            let btn=""; if(currentUser?.role==='admin') btn=`<button class="btn-danger" style="margin-left:auto" onclick="deleteSchedule('${doc.id}')">Padam</button>`;
-            div.innerHTML += `<div class="schedule-table-container"><div class="schedule-header"><h4>${title} (${d.date})</h4>${btn}</div><div class="schedule-body">${rows}</div></div>`;
+            let btn=""; if(currentUser?.role==='admin') btn=`<button class="btn-danger" style="float:right" onclick="deleteSchedule('${doc.id}')">Padam</button>`;
+            
+            // RENDER SEBAGAI TABLE
+            div.innerHTML += `
+            <div class="schedule-table-container">
+                <div class="schedule-header"><h4>${title} (${d.date})</h4>${btn}</div>
+                <table class="schedule-table">${rows}</table>
+            </div>`;
         });
     } catch(e){console.error(e)}
 }
 
-function mkRow(l,v){ if(!v)return""; return `<div class="schedule-row"><div class="col-label">${l}</div><div class="col-value">${v}</div></div>`; }
 window.deleteSchedule = async function(id) { if(confirm("Padam?")) { await deleteDoc(doc(db,"schedules",id)); loadWeeklySchedule(); } }
 
 // UI Toggles
@@ -253,4 +238,55 @@ window.toggleCabangFields = () => {
     document.getElementById('fieldsStandard').classList.toggle('hidden', isKid);
     document.getElementById('fieldsKids').classList.toggle('hidden', !isKid);
 };
-window.exportWeeklyPDF = async function() { alert("Fungsi PDF sedia ada."); };
+
+// --- PDF GENERATOR (FULL) ---
+window.exportWeeklyPDF = async function() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const dateInput = document.getElementById('weekFilterDate').value;
+    const { mon, sun } = getWeekRange(dateInput);
+
+    doc.setFillColor(0, 159, 227); doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFontSize(18); doc.setFont("helvetica", "bold");
+    doc.text("GEREJA SIB KEPAYAN", 105, 15, { align: "center" });
+    doc.setFontSize(12); doc.setFont("helvetica", "normal");
+    doc.text(`JADUAL: ${mon} HINGGA ${sun}`, 105, 30, { align: "center" });
+
+    const q = query(collection(db, "schedules"), where("date", ">=", mon), where("date", "<=", sun), orderBy("date"));
+    const snapshot = await getDocs(q);
+    
+    let yPos = 50; doc.setTextColor(0, 0, 0);
+
+    snapshot.forEach(dData => {
+        const d = dData.data();
+        let bodyData = [];
+        let title = d.type;
+
+        if (d.type === 'IBADAH_AHAD') {
+            title = `IBADAH UMUM AHAD (${d.date})`;
+            bodyData = [
+                ['Pimpin Ibadah', d.leader], ['Pujian', d.worship], ['Khotbah', d.speaker],
+                ['Doa PKK', d.doaPkk], ['Usher', d.usher || '-'],
+                ['Alkitab', `PL: ${d.bibleOT}\nPB: ${d.bibleNT}`]
+            ];
+        } else if (d.type === 'CABANG') {
+            title = `PELAYANAN ${d.subType} (${d.date})`;
+            bodyData = d.subType==='Kanak-Kanak' ? [['Besar',d.kidBig],['Tengah',d.kidMid],['Kecil',d.kidSmall]] : [['Aktiviti',d.activity],['Pujian',d.pujian],['Renungan',d.renungan]];
+        } else if (d.type === 'PERSEKUTUAN_DOA') {
+            title = `PERSEKUTUAN DOA (${d.date})`;
+            bodyData = [['Pimpin',d.leader],['Bahan',d.material],['Renungan',d.sharer]];
+        }
+
+        doc.setFontSize(11); doc.setTextColor(0, 159, 227); doc.setFont("helvetica", "bold");
+        doc.text(title, 14, yPos); yPos += 2;
+
+        doc.autoTable({
+            startY: yPos, body: bodyData, theme: 'grid',
+            headStyles: { fillColor: [0, 159, 227] },
+            columnStyles: { 0: { fontStyle: 'bold', width: 50 } },
+            margin: { left: 14, right: 14 }
+        });
+        yPos = doc.lastAutoTable.finalY + 10;
+    });
+    doc.save(`Jadual-${mon}.pdf`);
+}
