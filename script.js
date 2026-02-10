@@ -17,7 +17,7 @@ const db = getFirestore(app);
 let currentUser = null;
 let currentTeam = [];
 
-// --- AUTO LOGIN (FIX REFRESH ISSUE) ---
+// --- AUTO LOGIN ---
 window.addEventListener('DOMContentLoaded', () => {
     const savedUser = localStorage.getItem('sib_user');
     if (savedUser) {
@@ -64,7 +64,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
 function performLogin(user) {
     currentUser = user;
-    localStorage.setItem('sib_user', JSON.stringify(user)); // SIMPAN SESI
+    localStorage.setItem('sib_user', JSON.stringify(user));
     initDashboard();
 }
 
@@ -92,7 +92,7 @@ window.logout = function() {
     location.reload();
 }
 
-// --- NAV ---
+// --- NAV (FIX MENU SEPARATION) ---
 window.showTab = function(tabId) {
     document.querySelectorAll('.content-tab').forEach(el => el.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
@@ -137,7 +137,6 @@ window.loadTeamData = async function() {
     } catch(e){}
 }
 
-// CRUD Team & Password logic... (Singkatkan sebab had karakter, guna logic sama)
 document.getElementById('teamForm').addEventListener('submit', async(e)=>{
     e.preventDefault();
     const id = document.getElementById('teamMemberId').value;
@@ -155,12 +154,48 @@ window.deleteTeam = async function(id) { if(confirm("Padam?")) { await deleteDoc
 async function saveSch(data) {
     try { await addDoc(collection(db,"schedules"),data); alert("Disimpan!"); document.querySelectorAll('form').forEach(f=>f.reset()); loadWeeklySchedule(); } catch(e){alert(e.message)}
 }
-document.getElementById('formAhad').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'IBADAH_AHAD', date:document.getElementById('dateAhad').value, leader:document.getElementById('valAhadLeader').value, worship:document.getElementById('valAhadWorship').value, speaker:document.getElementById('valAhadSpeaker').value, doaPkk:document.getElementById('valAhadDoaPKK').value, usher:document.getElementById('valAhadUsher').value, hasPerjamuan:document.getElementById('checkPerjamuan').checked, pkLeader:document.getElementById('valAhadPK').value, pkAsst:document.getElementById('valAhadAsstPK').value, bibleOT:`${document.getElementById('valReaderOT').value} (${document.getElementById('valVerseOT').value})`, bibleNT:`${document.getElementById('valReaderNT').value} (${document.getElementById('valVerseNT').value})` })});
-document.getElementById('formKhas').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'IBADAH_KHAS', eventName:document.getElementById('valKhasName').value, date:document.getElementById('dateKhas').value, leader:document.getElementById('valKhasLeader').value, worship:document.getElementById('valKhasWorship').value, speaker:document.getElementById('valKhasSpeaker').value, doaPkk:document.getElementById('valKhasDoaPKK').value, usher:document.getElementById('valKhasUsher').value, hasPerjamuan:document.getElementById('checkPerjamuanKhas').checked, pkLeader:document.getElementById('valKhasPK').value, pkAsst:document.getElementById('valKhasAsstPK').value, bibleOT:`${document.getElementById('valKhasReaderOT').value} (${document.getElementById('valKhasVerseOT').value})`, bibleNT:`${document.getElementById('valKhasReaderNT').value} (${document.getElementById('valKhasVerseNT').value})`, note:document.getElementById('valKhasNote').value })});
-document.getElementById('formDoa').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'PERSEKUTUAN_DOA', date:document.getElementById('dateDoa').value, isSkipped:document.getElementById('checkNoDoa').checked, activityAlt:document.getElementById('valDoaActivity').value, leader:document.getElementById('valDoaLeader').value, material:document.getElementById('valDoaMaterial').value, sharer:document.getElementById('valDoaSharer').value })});
-document.getElementById('formCabang').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'CABANG', subType:document.getElementById('valCabangType').value, date:document.getElementById('dateCabang').value, activity:document.getElementById('valCabangActivity').value, pujian:document.getElementById('valCabangPujian').value, renungan:document.getElementById('valCabangRenungan').value, kidBig:document.getElementById('valKidsBig').value, kidMid:document.getElementById('valKidsMid').value, kidSmall:document.getElementById('valKidsSmall').value })});
 
-// --- LOAD WEEKLY VIEW (TABLE FIX) ---
+// 1. IBADAH AHAD
+document.getElementById('formAhad').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({
+    type:'IBADAH_AHAD', date:document.getElementById('dateAhad').value,
+    leader:document.getElementById('valAhadLeader').value, worship:document.getElementById('valAhadWorship').value,
+    speaker:document.getElementById('valAhadSpeaker').value, doaPkk:document.getElementById('valAhadDoaPKK').value,
+    usher:document.getElementById('valAhadUsher').value, hasPerjamuan:document.getElementById('checkPerjamuan').checked,
+    pkLeader:document.getElementById('valAhadPK').value, pkAsst:document.getElementById('valAhadAsstPK').value,
+    bibleOT:`${document.getElementById('valReaderOT').value} (${document.getElementById('valVerseOT').value})`,
+    bibleNT:`${document.getElementById('valReaderNT').value} (${document.getElementById('valVerseNT').value})`
+})});
+
+// 2. IBADAH KHAS (UPDATED)
+document.getElementById('formKhas').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({
+    type:'IBADAH_KHAS', eventName:document.getElementById('valKhasName').value, date:document.getElementById('dateKhas').value,
+    leader:document.getElementById('valKhasLeader').value, worship:document.getElementById('valKhasWorship').value,
+    speaker:document.getElementById('valKhasSpeaker').value, doaPkk:document.getElementById('valKhasDoaPKK').value,
+    usher:document.getElementById('valKhasUsher').value, hasPerjamuan:document.getElementById('checkPerjamuanKhas').checked,
+    pkLeader:document.getElementById('valKhasPK').value, pkAsst:document.getElementById('valKhasAsstPK').value,
+    bibleOT:`${document.getElementById('valKhasReaderOT').value} (${document.getElementById('valKhasVerseOT').value})`,
+    bibleNT:`${document.getElementById('valKhasReaderNT').value} (${document.getElementById('valKhasVerseNT').value})`,
+    note:document.getElementById('valKhasNote').value
+})});
+
+// 3. PERSEKUTUAN DOA (UPDATED)
+document.getElementById('formDoa').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({
+    type:'PERSEKUTUAN_DOA', date:document.getElementById('dateDoa').value, isSkipped:document.getElementById('checkNoDoa').checked,
+    activityAlt:document.getElementById('valDoaActivity').value, 
+    leader:document.getElementById('valDoaPujian').value, // Pimpin Pujian
+    material:document.getElementById('valDoaBahan').value, // Bahan Doa
+    sharer:document.getElementById('valDoaRenungan').value // Renungan
+})});
+
+// 4. CABANG
+document.getElementById('formCabang').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({
+    type:'CABANG', subType:document.getElementById('valCabangType').value, date:document.getElementById('dateCabang').value,
+    activity:document.getElementById('valCabangActivity').value, pujian:document.getElementById('valCabangPujian').value,
+    renungan:document.getElementById('valCabangRenungan').value, kidBig:document.getElementById('valKidsBig').value,
+    kidMid:document.getElementById('valKidsMid').value, kidSmall:document.getElementById('valKidsSmall').value
+})});
+
+// --- LOAD WEEKLY VIEW ---
 function getWeekRange(d) {
     const c=new Date(d); const f=c.getDate()-c.getDay()+1; const l=f+6;
     return { mon:new Date(c.setDate(f)).toISOString().split('T')[0], sun:new Date(c.setDate(l)).toISOString().split('T')[0] };
@@ -183,7 +218,6 @@ window.loadWeeklySchedule = async function() {
             const d = doc.data();
             let title="", rows="";
             
-            // Generate Table Rows
             if(d.type==='IBADAH_AHAD') {
                 title="IBADAH UMUM AHAD";
                 rows = `
@@ -201,12 +235,13 @@ window.loadWeeklySchedule = async function() {
                 <tr><td><b>Pujian</b></td><td>${d.worship}</td></tr>
                 <tr><td><b>Khotbah</b></td><td>${d.speaker}</td></tr>
                 <tr><td><b>Usher</b></td><td>${d.usher}</td></tr>
+                <tr><td><b>Alkitab</b></td><td>PL: ${d.bibleOT}<br>PB: ${d.bibleNT}</td></tr>
                 <tr><td><b>Nota</b></td><td>${d.note}</td></tr>`;
             } else if(d.type==='PERSEKUTUAN_DOA') {
                 title="PERSEKUTUAN DOA";
                 rows = d.isSkipped ? `<tr><td><b>Status</b></td><td>${d.activityAlt}</td></tr>` : 
-                `<tr><td><b>Pimpin</b></td><td>${d.leader}</td></tr>
-                 <tr><td><b>Bahan</b></td><td>${d.material}</td></tr>
+                `<tr><td><b>Pujian</b></td><td>${d.leader}</td></tr>
+                 <tr><td><b>Bahan Doa</b></td><td>${d.material}</td></tr>
                  <tr><td><b>Renungan</b></td><td>${d.sharer}</td></tr>`;
             } else if(d.type==='CABANG') {
                 title=d.subType.toUpperCase();
@@ -217,7 +252,6 @@ window.loadWeeklySchedule = async function() {
 
             let btn=""; if(currentUser?.role==='admin') btn=`<button class="btn-danger" style="float:right" onclick="deleteSchedule('${doc.id}')">Padam</button>`;
             
-            // RENDER SEBAGAI TABLE
             div.innerHTML += `
             <div class="schedule-table-container">
                 <div class="schedule-header"><h4>${title} (${d.date})</h4>${btn}</div>
@@ -239,7 +273,6 @@ window.toggleCabangFields = () => {
     document.getElementById('fieldsKids').classList.toggle('hidden', !isKid);
 };
 
-// --- PDF GENERATOR (FULL) ---
 window.exportWeeklyPDF = async function() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -265,16 +298,22 @@ window.exportWeeklyPDF = async function() {
         if (d.type === 'IBADAH_AHAD') {
             title = `IBADAH UMUM AHAD (${d.date})`;
             bodyData = [
-                ['Pimpin Ibadah', d.leader], ['Pujian', d.worship], ['Khotbah', d.speaker],
+                ['Pimpin', d.leader], ['Pujian', d.worship], ['Khotbah', d.speaker],
                 ['Doa PKK', d.doaPkk], ['Usher', d.usher || '-'],
                 ['Alkitab', `PL: ${d.bibleOT}\nPB: ${d.bibleNT}`]
+            ];
+        } else if (d.type === 'IBADAH_KHAS') {
+            title = `${d.eventName.toUpperCase()} (${d.date})`;
+            bodyData = [
+                ['Pimpin', d.leader], ['Pujian', d.worship], ['Khotbah', d.speaker],
+                ['Usher', d.usher || '-'], ['Alkitab', `PL: ${d.bibleOT}\nPB: ${d.bibleNT}`], ['Nota', d.note]
             ];
         } else if (d.type === 'CABANG') {
             title = `PELAYANAN ${d.subType} (${d.date})`;
             bodyData = d.subType==='Kanak-Kanak' ? [['Besar',d.kidBig],['Tengah',d.kidMid],['Kecil',d.kidSmall]] : [['Aktiviti',d.activity],['Pujian',d.pujian],['Renungan',d.renungan]];
         } else if (d.type === 'PERSEKUTUAN_DOA') {
             title = `PERSEKUTUAN DOA (${d.date})`;
-            bodyData = [['Pimpin',d.leader],['Bahan',d.material],['Renungan',d.sharer]];
+            bodyData = d.isSkipped ? [['Status', d.activityAlt]] : [['Pujian',d.leader],['Bahan Doa',d.material],['Renungan',d.sharer]];
         }
 
         doc.setFontSize(11); doc.setTextColor(0, 159, 227); doc.setFont("helvetica", "bold");
