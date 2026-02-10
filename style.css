@@ -1,6 +1,6 @@
 :root {
-    --sib-blue: #009FE3; /* SIB Logo Blue */
-    --sib-yellow: #FFFF00; /* SIB Logo Yellow */
+    --sib-blue: #009FE3;
+    --sib-yellow: #FFFF00;
     --sib-dark-blue: #0056b3;
     --dark: #333;
     --light: #f4f4f4;
@@ -11,21 +11,28 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 body { background: var(--light); color: var(--dark); overflow-x: hidden; font-size: 14px; }
 
-/* LOGIN PAGE (No Landing Page) */
+/* LOGIN SCREEN FIX */
 .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--sib-blue), var(--sib-dark-blue)); }
-.login-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
-.login-logo { width: 100px; margin-bottom: 20px; }
-.login-header h2 { color: var(--sib-dark-blue); font-size: 1.5rem; margin-bottom: 5px; }
-.login-header h3 { color: #666; font-size: 1.2rem; margin-bottom: 30px; font-weight: 400; }
-.input-group { position: relative; margin-bottom: 20px; }
+.login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
+
+/* LOGO FIX - MENGAWAL SAIZ LOGO */
+.login-logo { 
+    width: 120px; /* Lebar ditetapkan supaya tidak pecah */
+    height: auto; 
+    display: block; 
+    margin: 0 auto 15px auto; 
+}
+
+.login-header h2 { color: var(--sib-dark-blue); font-size: 1.4rem; margin-bottom: 5px; }
+.login-header h3 { color: #666; font-size: 1.1rem; margin-bottom: 25px; font-weight: 400; }
+.input-group { position: relative; margin-bottom: 15px; }
 .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
-.input-group input { width: 100%; padding: 12px 15px 12px 45px; border: 1px solid #ddd; border-radius: 5px; outline: none; transition: 0.3s; }
-.input-group input:focus { border-color: var(--sib-blue); }
-.btn-login { width: 100%; background: var(--sib-blue); color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.input-group input { width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #ddd; border-radius: 5px; outline: none; }
+.btn-login { width: 100%; background: var(--sib-blue); color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
 .btn-login:hover { background: var(--sib-dark-blue); }
 .login-note { margin-top: 15px; font-size: 0.8rem; color: #888; }
 
-/* LAYOUT */
+/* DASHBOARD STYLES */
 .view { display: none; }
 .view.active { display: block; }
 .hidden { display: none !important; }
@@ -40,7 +47,7 @@ body { background: var(--light); color: var(--dark); overflow-x: hidden; font-si
 .main-content { flex: 1; padding: 25px; background: #edf2f7; }
 .main-content header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 
-/* TABLES & CARDS */
+/* FORMS & TABLES */
 .card-form { background: white; padding: 25px; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 20px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .form-group { margin-bottom: 15px; }
@@ -51,27 +58,23 @@ body { background: var(--light); color: var(--dark); overflow-x: hidden; font-si
 .btn-secondary.active { background: var(--sib-blue); color: white; }
 .btn-danger { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
 .btn-edit { background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
-
-/* TABLES */
+.checkbox-group { display: flex; align-items: center; gap: 10px; }
+.checkbox-group input { width: auto; margin: 0; }
 .table-responsive { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); }
 th { background: var(--sib-blue); color: white; padding: 12px; text-align: left; }
 td { padding: 12px; border-bottom: 1px solid #eee; }
 
-/* WEEKLY SCHEDULE VIEW */
+/* JADUAL GRID */
 .weekly-grid { display: flex; flex-direction: column; gap: 20px; }
-.schedule-block { background: white; border: 1px solid #ddd; border-left: 5px solid var(--sib-blue); padding: 20px; border-radius: 5px; position: relative; }
+.schedule-block { background: white; border: 1px solid #ddd; border-left: 5px solid var(--sib-blue); padding: 20px; border-radius: 5px; position: relative; margin-bottom: 15px; }
 .schedule-block h4 { margin-bottom: 15px; color: var(--sib-dark-blue); border-bottom: 1px solid #eee; padding-bottom: 10px; }
 .schedule-block .actions { position: absolute; top: 15px; right: 15px; }
 .detail-row { display: flex; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
 .detail-label { width: 150px; font-weight: bold; color: #555; }
 .detail-value { flex: 1; color: #000; }
-
-/* SUB TABS */
-.tab-switcher { margin-bottom: 20px; display: flex; gap: 10px; }
 .sub-tab { display: none; background: white; padding: 20px; border-radius: 8px; }
 .sub-tab.active { display: block; }
-.hidden { display: none; }
 
 @media (max-width: 768px) {
     .dashboard-wrapper { flex-direction: column; }
