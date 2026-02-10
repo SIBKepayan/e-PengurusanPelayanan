@@ -81,3 +81,9 @@ td { padding: 12px; border-bottom: 1px solid #eee; }
     .sidebar { width: 100%; }
     .form-row { grid-template-columns: 1fr; }
 }
+
+/* TABLE STYLE UNTUK JADUAL MINGGUAN */
+.schedule-table { width: 100%; border-collapse: collapse; }
+.schedule-table td { padding: 10px; border-bottom: 1px solid #eee; }
+.schedule-table tr:last-child td { border-bottom: none; }
+.schedule-table td:first-child { background: #f9f9f9; width: 30%; font-weight: bold; color: #555; }
