@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-Pengurusan SIB Kepayan</title>
+    <title>Sistem e-Pengurusan Pelayanan SIB Kepayan</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,64 +11,26 @@
 </head>
 <body>
 
-    <section id="landing-page" class="view active">
-        <nav class="navbar">
-            <div class="logo">SIB Kepayan</div>
-            <ul class="nav-links">
-                <li><a href="#home">Utama</a></li>
-                <li><button class="btn-primary" onclick="navigateTo('auth-page')">Log Masuk / Daftar</button></li>
-            </ul>
-        </nav>
-        
-        <header class="hero">
-            <div class="hero-content">
-                <h1>Sistem e-Pengurusan Pelayanan</h1>
-                <p>SIB Kepayan</p>
-                <button class="btn-secondary" onclick="navigateTo('auth-page')">Akses Portal</button>
-            </div>
-        </header>
-    </section>
-
-    <section id="auth-page" class="view hidden">
-        <div class="auth-container" id="auth-container">
-            <button class="back-btn" onclick="navigateTo('landing-page')"><i class="fas fa-arrow-left"></i> Kembali</button>
-            
-            <div class="form-container sign-up-container">
-                <form id="registerForm">
-                    <h1>Daftar Akaun</h1>
-                    <input type="text" id="regName" placeholder="Nama Penuh" required />
-                    <input type="email" id="regEmail" placeholder="E-mel" required />
-                    <input type="password" id="regPass" placeholder="Kata Laluan" required />
-                    <select id="regRole">
-                        <option value="council">Ahli Majlis Gereja</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                    <button type="submit">Daftar</button>
-                </form>
-            </div>
-            
-            <div class="form-container sign-in-container">
-                <form id="loginForm">
-                    <h1>Log Masuk</h1>
-                    <input type="email" id="loginEmail" placeholder="E-mel" required />
-                    <input type="password" id="loginPass" placeholder="Kata Laluan" required />
-                    <button type="submit">Masuk</button>
-                    <p style="margin-top: 10px; font-size: 0.8rem; color: #666;">Demo Admin: admin@sib.com / 12345</p>
-                    <p style="margin-top: 5px; font-size: 0.8rem; color: #666;">Demo Council: council@sib.com / 12345</p>
-                </form>
-            </div>
-            
-            <div class="overlay-container">
-                <div class="overlay">
-                    <div class="overlay-panel overlay-left">
-                        <h1>Selamat Kembali!</h1>
-                        <button class="ghost" id="signIn">Log Masuk</button>
-                    </div>
-                    <div class="overlay-panel overlay-right">
-                        <h1>Halo!</h1>
-                        <button class="ghost" id="signUp">Daftar</button>
-                    </div>
+    <section id="auth-page" class="view active">
+        <div class="login-wrapper">
+            <div class="login-box">
+                <div class="login-header">
+                    <img src="logo.png" alt="Logo SIB" class="login-logo">
+                    <h2>Sistem e-Pengurusan Pelayanan</h2>
+                    <h3>SIB Kepayan</h3>
                 </div>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="loginId" placeholder="Nama Pengguna / No. Telefon" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPass" placeholder="Kata Laluan" required>
+                    </div>
+                    <button type="submit" class="btn-login">LOG MASUK</button>
+                    <p class="login-note">Untuk Admin & Ahli Majlis Gereja Sahaja</p>
+                </form>
             </div>
         </div>
     </section>
@@ -77,245 +39,231 @@
         <div class="dashboard-wrapper">
             <aside class="sidebar">
                 <div class="sidebar-header">
-                    <h3>SIB Admin</h3>
-                    <p id="user-role-display">Role</p>
+                    <img src="logo.png" alt="Logo Kecil">
+                    <div>
+                        <h4>SIB Kepayan</h4>
+                        <p id="user-role-display">Role</p>
+                    </div>
                 </div>
                 <ul class="menu">
-                    <li onclick="showTab('tab-overview')" class="active"><i class="fas fa-home"></i> Utama</li>
+                    <li onclick="showTab('tab-jadual-mingguan')" class="active"><i class="fas fa-calendar-alt"></i> Lihat Jadual Mingguan</li>
                     
-                    <li onclick="showTab('tab-cabang')"><i class="fas fa-users-cog"></i> Jadual Cabang</li>
-                    <li onclick="showTab('tab-view-schedule')"><i class="fas fa-calendar-alt"></i> Lihat Jadual</li>
-
-                    <li class="admin-only" onclick="showTab('tab-ibadah-admin')"><i class="fas fa-church"></i> Urus Ibadah Utama</li>
-                    <li class="admin-only" onclick="showTab('tab-members')"><i class="fas fa-users"></i> Database Jemaat</li>
+                    <li class="admin-only" onclick="showTab('tab-urus-tim')"><i class="fas fa-users-cog"></i> Data Tim Pelayanan</li>
+                    <li class="admin-only" onclick="showTab('tab-urus-ibadah')"><i class="fas fa-church"></i> Urus Ibadah Utama</li>
+                    <li class="admin-only" onclick="showTab('tab-urus-cabang')"><i class="fas fa-project-diagram"></i> Urus Jadual Cabang</li>
                     
-                    <li onclick="logout()"><i class="fas fa-sign-out-alt"></i> Log Keluar</li>
+                    <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Keluar</li>
                 </ul>
             </aside>
 
             <main class="main-content">
                 <header>
-                    <h2 id="page-title">Dashboard</h2>
+                    <h2 id="page-title">Lihat Jadual Mingguan</h2>
                     <div class="user-info">
                         <span id="username-display">User</span>
                         <i class="fas fa-user-circle fa-2x"></i>
                     </div>
                 </header>
 
-                <div id="tab-overview" class="content-tab active">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <h3>Jumlah Jemaat</h3>
-                            <p id="stat-members">0</p>
+                <div id="tab-jadual-mingguan" class="content-tab active">
+                    <div class="toolbar">
+                        <div class="date-filter">
+                            <label>Pilih Tarikh (Sistem akan papar minggu tersebut):</label>
+                            <input type="date" id="weekFilterDate" onchange="loadWeeklySchedule()">
                         </div>
-                        <div class="stat-card">
-                            <h3>Jadual Minggu Ini</h3>
-                            <p>3 Aktiviti</p>
-                        </div>
+                        <button class="btn-primary" onclick="exportWeeklyPDF()"><i class="fas fa-file-pdf"></i> Export PDF Buletin</button>
                     </div>
-                    <div class="bulletin-board">
-                        <h3>Buletin / Pengumuman</h3>
-                        <p>Selamat datang ke sistem pengurusan baru SIB Kepayan.</p>
+
+                    <div id="weekly-schedule-container">
+                        <div class="schedule-placeholder">Sila pilih tarikh untuk melihat jadual minggu berkenaan.</div>
                     </div>
                 </div>
 
-                <div id="tab-cabang" class="content-tab">
-                    <h3>Pengurusan Jadual Cabang Pelayanan</h3>
+                <div id="tab-urus-tim" class="content-tab">
+                    <h3>Pengurusan Data Tim Pelayanan</h3>
+                    
                     <div class="card-form">
-                        <form id="cabangForm">
-                            <div class="form-group">
-                                <label>Pilih Cabang</label>
-                                <select id="cabangType" required>
-                                    <option value="Wira">Pelayanan Wira</option>
-                                    <option value="Wanita">Pelayanan Wanita</option>
-                                    <option value="Muda-Mudi">Pelayanan Muda-Mudi</option>
-                                </select>
+                        <h4>Tambah / Kemaskini Ahli Tim</h4>
+                        <form id="teamForm">
+                            <input type="hidden" id="teamMemberId"> <div class="form-row">
+                                <div class="form-group">
+                                    <label>Nama Penuh</label>
+                                    <input type="text" id="teamName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>No. Telefon</label>
+                                    <input type="text" id="teamPhone" required>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Tarikh</label>
-                                <input type="date" id="cabangDate" required>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Jawatan</label>
+                                    <select id="teamRole" required>
+                                        <option value="">-- Pilih Jawatan --</option>
+                                        <option value="Ahli Majlis Gereja">Ahli Majlis Gereja</option>
+                                        <option value="Pengerusi Cabang Pelayanan">Pengerusi Cabang Pelayanan</option>
+                                        <option value="Koordinator Kelompok Sel">Koordinator Kelompok Sel</option>
+                                        <option value="PMM">PMM (Muda-Mudi)</option>
+                                        <option value="P. Wanita">P. Wanita</option>
+                                        <option value="PKK">PKK (Kanak-Kanak)</option>
+                                        <option value="P. Wira">P. Wira</option>
+                                        <option value="MASM">MASM (Media/Audio)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select id="teamStatus" required>
+                                        <option value="Aktif">Aktif</option>
+                                        <option value="Cuti/Rehat Pelayanan">Cuti/Rehat Pelayanan</option>
+                                        <option value="Tidak Aktif">Tidak Aktif</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Jenis Aktiviti</label>
-                                <input type="text" id="cabangActivity" placeholder="Cth: Ibadah, Sukan, Lawatan" required>
+                            <div class="btn-group">
+                                <button type="submit" class="btn-primary" id="btnSaveTeam">Simpan</button>
+                                <button type="button" class="btn-secondary" onclick="resetTeamForm()">Batal</button>
                             </div>
-                            <div class="form-group">
-                                <label>Pimpin Pujian</label>
-                                <select class="member-select" id="cabangPujian"></select>
-                            </div>
-                            <div class="form-group">
-                                <label>Renungan / Firman</label>
-                                <select class="member-select" id="cabangRenungan"></select>
-                            </div>
-                            <button type="submit" class="btn-primary">Simpan Jadual</button>
                         </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="teamTable">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>Jawatan</th>
+                                    <th>Status</th>
+                                    <th>Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
 
-                <div id="tab-ibadah-admin" class="content-tab">
+                <div id="tab-urus-ibadah" class="content-tab">
                     <div class="tab-switcher">
-                        <button class="btn-secondary active" onclick="switchIbadahTab('doa')">Persekutuan Doa</button>
-                        <button class="btn-secondary" onclick="switchIbadahTab('ahad')">Ibadah Raya Ahad</button>
+                        <button class="btn-secondary active" onclick="switchSubTab('sub-ahad')">Ibadah Umum Ahad</button>
+                        <button class="btn-secondary" onclick="switchSubTab('sub-doa')">Persekutuan Doa</button>
+                        <button class="btn-secondary" onclick="switchSubTab('sub-khas')">Ibadah Khas / Perayaan</button>
                     </div>
 
-                    <div id="subtab-doa" class="ibadah-subtab">
-                        <h4>Jadual Persekutuan Doa (Jumaat)</h4>
-                        <form id="doaForm">
-                            <div class="form-group">
-                                <label>Tarikh (Jumaat)</label>
-                                <input type="date" id="doaDate">
-                            </div>
+                    <div id="sub-ahad" class="sub-tab active">
+                        <form id="formAhad">
+                            <h4>Jadual Ibadah Umum Ahad</h4>
+                            <div class="form-group"><label>Tarikh</label><input type="date" id="dateAhad" required></div>
                             
-                            <div class="form-group checkbox-group">
-                                <input type="checkbox" id="doaSkip" onchange="toggleDoaFields()">
-                                <label for="doaSkip">Tiada Persekutuan / Aktiviti Lain</label>
-                            </div>
-
-                            <div id="doaNormalFields">
-                                <div class="form-group">
-                                    <label>Pimpin Doa</label>
-                                    <select class="member-select" id="doaLeader"></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Bahan Doa</label>
-                                    <select class="member-select" id="doaMaterial"></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Renungan</label>
-                                    <select class="member-select" id="doaSharer"></select>
-                                </div>
-                            </div>
-
-                            <div id="doaAlternativeFields" class="hidden">
-                                <div class="form-group">
-                                    <label>Nama Aktiviti (Optional)</label>
-                                    <input type="text" id="doaAltActivity" placeholder="Cth: Gabungan Zon, Cuti Umum">
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn-primary">Simpan Jadual Doa</button>
-                        </form>
-                    </div>
-
-                    <div id="subtab-ahad" class="ibadah-subtab hidden">
-                        <h4>Jadual Ibadah Raya (Ahad)</h4>
-                        <form id="ahadForm">
-                            <div class="form-group">
-                                <label>Tarikh (Ahad)</label>
-                                <input type="date" id="ahadDate">
-                            </div>
-
                             <div class="form-row">
-                                <div class="form-group">
-                                    <label>Pimpin Ibadah</label>
-                                    <select class="member-select" id="ahadLeader"></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Pimpin Pujian</label>
-                                    <select class="member-select" id="ahadWorship"></select>
-                                </div>
+                                <div class="form-group"><label>Pimpin Ibadah</label><select class="member-select" id="valAhadLeader"></select></div>
+                                <div class="form-group"><label>Pimpin Pujian</label><select class="member-select" id="valAhadWorship"></select></div>
                             </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Khotbah</label><select class="member-select" id="valAhadSpeaker"></select></div>
+                                <div class="form-group"><label>Doa PKK</label><select class="member-select" id="valAhadDoaPKK"></select></div>
+                            </div>
+                            <div class="form-group"><label>Penyambut Tetamu</label><select class="member-select" id="valAhadUsher"></select></div>
 
                             <div class="form-group checkbox-group">
-                                <input type="checkbox" id="ahadPerjamuan" onchange="togglePerjamuan()">
-                                <label for="ahadPerjamuan">Ada Perjamuan Kudus?</label>
+                                <input type="checkbox" id="checkPerjamuan" onchange="togglePerjamuan()">
+                                <label>Ada Perjamuan Kudus?</label>
                             </div>
-
-                            <div id="perjamuanFields" class="hidden form-row">
-                                <div class="form-group">
-                                    <label>Perjamuan Kudus (Ketua)</label>
-                                    <select class="member-select" id="ahadPK"></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Pembantu PK</label>
-                                    <select class="member-select" id="ahadAssistantPK"></select>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Khotbah</label>
-                                    <select class="member-select" id="ahadSpeaker"></select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Doa PKK</label>
-                                    <select class="member-select" id="ahadDoaPKK"></select>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Penyambut Tetamu</label>
-                                <select class="member-select" id="ahadUsher"></select>
+                            <div id="divPerjamuan" class="hidden form-row">
+                                <div class="form-group"><label>Perjamuan Kudus (Ketua)</label><select class="member-select" id="valAhadPK"></select></div>
+                                <div class="form-group"><label>Pembantu PK</label><select class="member-select" id="valAhadAsstPK"></select></div>
                             </div>
 
                             <fieldset>
                                 <legend>Pembacaan Alkitab</legend>
                                 <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Pembaca PL (Nama)</label>
-                                        <select class="member-select" id="ahadReaderOT"></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Ayat PL</label>
-                                        <input type="text" id="ahadVerseOT" placeholder="Cth: Kejadian 1:1-10">
-                                    </div>
+                                    <div class="form-group"><label>Nama (PL)</label><select class="member-select" id="valReaderOT"></select></div>
+                                    <div class="form-group"><label>Ayat (PL)</label><input type="text" id="valVerseOT" placeholder="Cth: Kejadian 1:1"></div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Pembaca PB (Nama)</label>
-                                        <select class="member-select" id="ahadReaderNT"></select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Ayat PB</label>
-                                        <input type="text" id="ahadVerseNT" placeholder="Cth: Yohanes 3:16">
-                                    </div>
+                                    <div class="form-group"><label>Nama (PB)</label><select class="member-select" id="valReaderNT"></select></div>
+                                    <div class="form-group"><label>Ayat (PB)</label><input type="text" id="valVerseNT" placeholder="Cth: Matius 1:1"></div>
                                 </div>
                             </fieldset>
+                            <button type="submit" class="btn-primary">Simpan Jadual Ahad</button>
+                        </form>
+                    </div>
 
-                            <button type="submit" class="btn-primary" style="margin-top: 20px;">Simpan Jadual Ahad</button>
+                    <div id="sub-doa" class="sub-tab hidden">
+                        <form id="formDoa">
+                            <h4>Jadual Persekutuan Doa (Jumaat)</h4>
+                            <div class="form-group"><label>Tarikh</label><input type="date" id="dateDoa" required></div>
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="checkNoDoa" onchange="toggleDoaAlt()">
+                                <label>Tiada Persekutuan / Aktiviti Lain</label>
+                            </div>
+                            <div id="divDoaNormal">
+                                <div class="form-group"><label>Pimpin Doa</label><select class="member-select" id="valDoaLeader"></select></div>
+                                <div class="form-group"><label>Bahan Doa</label><select class="member-select" id="valDoaMaterial"></select></div>
+                                <div class="form-group"><label>Renungan</label><select class="member-select" id="valDoaSharer"></select></div>
+                            </div>
+                            <div id="divDoaAlt" class="hidden">
+                                <div class="form-group"><label>Nama Aktiviti (Optional)</label><input type="text" id="valDoaActivity" placeholder="Cth: Gabungan Zon"></div>
+                            </div>
+                            <button type="submit" class="btn-primary">Simpan Jadual Doa</button>
+                        </form>
+                    </div>
+
+                    <div id="sub-khas" class="sub-tab hidden">
+                        <form id="formKhas">
+                            <h4>Ibadah Khas / Perayaan Gereja</h4>
+                            <div class="form-row">
+                                <div class="form-group"><label>Nama Ibadah/Perayaan</label><input type="text" id="valKhasName" placeholder="Cth: Jumaat Agung" required></div>
+                                <div class="form-group"><label>Tarikh</label><input type="date" id="dateKhas" required></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Pimpin Ibadah</label><select class="member-select" id="valKhasLeader"></select></div>
+                                <div class="form-group"><label>Pimpin Pujian</label><select class="member-select" id="valKhasWorship"></select></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Khotbah</label><select class="member-select" id="valKhasSpeaker"></select></div>
+                                <div class="form-group"><label>Doa PKK</label><select class="member-select" id="valKhasDoaPKK"></select></div>
+                            </div>
+                            <div class="form-group"><label>Nota Tambahan</label><textarea id="valKhasNote" rows="3"></textarea></div>
+                            <button type="submit" class="btn-primary">Simpan Jadual Khas</button>
                         </form>
                     </div>
                 </div>
 
-                <div id="tab-view-schedule" class="content-tab">
-                    <h3>Jadual Terkini</h3>
-                    <div id="schedule-display-area">
-                        <p class="text-muted">Tiada jadual direkodkan lagi.</p>
-                    </div>
-                </div>
+                <div id="tab-urus-cabang" class="content-tab">
+                    <form id="formCabang">
+                        <h3>Jadual Cabang Pelayanan</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Pilih Cabang</label>
+                                <select id="valCabangType" onchange="toggleCabangFields()" required>
+                                    <option value="Wira">Pelayanan Wira</option>
+                                    <option value="Wanita">Pelayanan Wanita</option>
+                                    <option value="Muda-Mudi">Pelayanan Muda-Mudi</option>
+                                    <option value="Kanak-Kanak">Pelayanan Kanak-Kanak</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Tarikh</label><input type="date" id="dateCabang" required></div>
+                        </div>
 
-                <div id="tab-members" class="content-tab">
-                    <div class="toolbar">
-                        <h3>Senarai Jemaat</h3>
-                        <button class="btn-primary" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
-                    </div>
-                    
-                    <div class="card-form">
-                        <h4>Daftar Jemaat Baru</h4>
-                        <form id="addMemberForm" style="display:flex; gap:10px;">
-                            <input type="text" id="newMemberName" placeholder="Nama Penuh" required>
-                            <input type="text" id="newMemberPhone" placeholder="No. Telefon" required>
-                            <button type="submit" class="btn-primary">Tambah</button>
-                        </form>
-                    </div>
+                        <div id="fieldsStandard">
+                            <div class="form-group"><label>Jenis Aktiviti</label><input type="text" id="valCabangActivity" placeholder="Cth: Ibadah / Sukan"></div>
+                            <div class="form-group"><label>Pimpin Pujian</label><select class="member-select" id="valCabangPujian"></select></div>
+                            <div class="form-group"><label>Renungan</label><select class="member-select" id="valCabangRenungan"></select></div>
+                        </div>
 
-                    <table id="membersTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nama</th>
-                                <th>No. Telefon</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                        <div id="fieldsKids" class="hidden">
+                            <div class="form-group"><label>Guru Kelas Besar</label><select class="member-select" id="valKidsBig"></select></div>
+                            <div class="form-group"><label>Guru Kelas Tengah</label><select class="member-select" id="valKidsMid"></select></div>
+                            <div class="form-group"><label>Guru Kelas Kecil</label><select class="member-select" id="valKidsSmall"></select></div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Simpan Jadual Cabang</button>
+                    </form>
                 </div>
 
             </main>
         </div>
     </section>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
