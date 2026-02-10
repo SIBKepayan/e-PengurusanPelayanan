@@ -45,11 +45,11 @@
                     </div>
                 </div>
                 <ul class="menu">
-                    <li onclick="showTab('tab-home')" class="active"><i class="fas fa-calendar-alt"></i> Jadual Mingguan</li>
+                    <li onclick="showTab('tab-home')" class="active"><i class="fas fa-home"></i> Laman Utama</li>
                     
                     <li class="admin-only" onclick="showTab('tab-urus-tim')"><i class="fas fa-users-cog"></i> Data Tim Pelayanan</li>
                     <li class="admin-only" onclick="showTab('tab-urus-ibadah')"><i class="fas fa-church"></i> Urus Ibadah Utama</li>
-                    <li class="admin-only" onclick="showTab('tab-urus-cabang')"><i class="fas fa-network-wired"></i> Urus Jadual Cabang</li>
+                    <li class="admin-only" onclick="showTab('tab-urus-cabang')"><i class="fas fa-project-diagram"></i> Urus Jadual Cabang</li>
                     
                     <li onclick="showTab('tab-profile')"><i class="fas fa-key"></i> Tukar Kata Laluan</li>
                     <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Keluar</li>
@@ -58,7 +58,7 @@
 
             <main class="main-content">
                 <header>
-                    <h2 id="page-title">Jadual Mingguan</h2>
+                    <h2 id="page-title">Laman Utama</h2>
                     <div class="user-info">
                         <span id="username-display">User</span>
                         <i class="fas fa-user-circle fa-2x"></i>
@@ -68,14 +68,13 @@
                 <div id="tab-home" class="content-tab active">
                     <div class="toolbar">
                         <div class="date-filter">
-                            <label>Pilih Tarikh:</label>
+                            <label>Pilih Tarikh (Minggu):</label>
                             <input type="date" id="weekFilterDate" onchange="loadWeeklySchedule()">
                         </div>
                         <button class="btn-primary" onclick="exportWeeklyPDF()"><i class="fas fa-file-pdf"></i> Export PDF Buletin</button>
                     </div>
                     <div id="weekly-schedule-container"></div>
                 </div>
-
                 <div id="tab-urus-tim" class="content-tab">
                     <h3>Pengurusan Data Tim Pelayanan</h3>
                     <div class="card-form">
@@ -115,14 +114,14 @@
                         </form>
                     </div>
                     <div class="table-responsive">
-                        <table id="teamTable" class="std-table">
+                        <table id="teamTable">
                             <thead><tr><th>Nama</th><th>Jawatan</th><th>Status</th><th>Tindakan</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
                 </div>
-
                 <div id="tab-urus-ibadah" class="content-tab">
+                    
                     <div class="tab-switcher">
                         <button class="btn-secondary active" onclick="switchSubTab('sub-ahad')">Ibadah Umum Ahad</button>
                         <button class="btn-secondary" onclick="switchSubTab('sub-doa')">Persekutuan Doa</button>
@@ -181,10 +180,7 @@
                             </div>
 
                             <div id="divDoaAlt" class="hidden">
-                                <div class="form-group">
-                                    <label>Aktiviti / Ibadah Khas</label>
-                                    <input type="text" id="valDoaActivity" placeholder="Sila isi jenis aktiviti...">
-                                </div>
+                                <div class="form-group"><label>Aktiviti / Ibadah Khas</label><input type="text" id="valDoaActivity" placeholder="Nyatakan aktiviti..."></div>
                             </div>
                             <button type="submit" class="btn-primary">Simpan Jadual Doa</button>
                         </form>
@@ -194,7 +190,7 @@
                         <form id="formKhas">
                             <h4>Ibadah Khas / Perayaan</h4>
                             <div class="form-row">
-                                <div class="form-group"><label>Jenis / Tajuk Ibadah</label><input type="text" id="valKhasName" required placeholder="Contoh: Jumaat Agung"></div>
+                                <div class="form-group"><label>Jenis / Tajuk Ibadah</label><input type="text" id="valKhasName" required placeholder="Cth: Jumaat Agung"></div>
                                 <div class="form-group"><label>Tarikh</label><input type="date" id="dateKhas" required></div>
                             </div>
                             <div class="form-row">
@@ -208,7 +204,7 @@
                             <div class="form-group"><label>Penyambut Tetamu</label><select class="member-select" id="valKhasUsher"></select></div>
                             
                             <div class="form-group checkbox-group">
-                                <input type="checkbox" id="checkPerjamuanKhas" onchange="togglePerjamuan('divPerjamuanKhas')"> <label>Ada Perjamuan Kudus?</label>
+                                <input type="checkbox" id="checkPerjamuanKhas" onchange="togglePerjamuan('divPerjamuanKhas')"> <label>Ada Perjamuan?</label>
                             </div>
                             <div id="divPerjamuanKhas" class="hidden form-row">
                                 <div class="form-group"><label>Ketua PK</label><select class="member-select" id="valKhasPK"></select></div>
@@ -230,7 +226,6 @@
                         </form>
                     </div>
                 </div>
-
                 <div id="tab-urus-cabang" class="content-tab">
                     <form id="formCabang">
                         <h3>Jadual Cabang Pelayanan</h3>
@@ -258,7 +253,6 @@
                         <button type="submit" class="btn-primary">Simpan Jadual Cabang</button>
                     </form>
                 </div>
-
                 <div id="tab-profile" class="content-tab">
                     <h3>Tukar Kata Laluan</h3>
                     <div class="card-form" style="max-width:500px">
@@ -268,8 +262,7 @@
                         </form>
                     </div>
                 </div>
-
-            </main>
+                </main>
         </div>
     </section>
 
