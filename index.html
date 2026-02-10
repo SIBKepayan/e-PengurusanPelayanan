@@ -47,7 +47,7 @@
                 <ul class="menu">
                     <li onclick="showTab('tab-home')" class="active"><i class="fas fa-calendar-alt"></i> Jadual Mingguan</li>
                     
-                    <li class="admin-only" onclick="showTab('tab-urus-tim')"><i class="fas fa-users"></i> Data Tim Pelayanan</li>
+                    <li class="admin-only" onclick="showTab('tab-urus-tim')"><i class="fas fa-users-cog"></i> Data Tim Pelayanan</li>
                     <li class="admin-only" onclick="showTab('tab-urus-ibadah')"><i class="fas fa-church"></i> Urus Ibadah Utama</li>
                     <li class="admin-only" onclick="showTab('tab-urus-cabang')"><i class="fas fa-network-wired"></i> Urus Jadual Cabang</li>
                     
@@ -75,6 +75,7 @@
                     </div>
                     <div id="weekly-schedule-container"></div>
                 </div>
+
                 <div id="tab-urus-tim" class="content-tab">
                     <h3>Pengurusan Data Tim Pelayanan</h3>
                     <div class="card-form">
@@ -120,6 +121,7 @@
                         </table>
                     </div>
                 </div>
+
                 <div id="tab-urus-ibadah" class="content-tab">
                     <div class="tab-switcher">
                         <button class="btn-secondary active" onclick="switchSubTab('sub-ahad')">Ibadah Umum Ahad</button>
@@ -166,16 +168,23 @@
                         <form id="formDoa">
                             <h4>Jadual Persekutuan Doa</h4>
                             <div class="form-group"><label>Tarikh</label><input type="date" id="dateDoa" required></div>
+                            
                             <div class="form-group checkbox-group">
-                                <input type="checkbox" id="checkNoDoa" onchange="toggleDoaAlt()"> <label>Tiada Persekutuan</label>
+                                <input type="checkbox" id="checkNoDoa" onchange="toggleDoaAlt()"> 
+                                <label>Tiada Persekutuan / Cuti</label>
                             </div>
+
                             <div id="divDoaNormal">
-                                <div class="form-group"><label>Pimpin Doa</label><select class="member-select" id="valDoaLeader"></select></div>
-                                <div class="form-group"><label>Bahan Doa</label><select class="member-select" id="valDoaMaterial"></select></div>
-                                <div class="form-group"><label>Renungan</label><select class="member-select" id="valDoaSharer"></select></div>
+                                <div class="form-group"><label>Pimpin Pujian</label><select class="member-select" id="valDoaPujian"></select></div>
+                                <div class="form-group"><label>Pembawa Bahan Doa</label><select class="member-select" id="valDoaBahan"></select></div>
+                                <div class="form-group"><label>Renungan</label><select class="member-select" id="valDoaRenungan"></select></div>
                             </div>
+
                             <div id="divDoaAlt" class="hidden">
-                                <div class="form-group"><label>Catatan</label><input type="text" id="valDoaActivity"></div>
+                                <div class="form-group">
+                                    <label>Aktiviti / Ibadah Khas</label>
+                                    <input type="text" id="valDoaActivity" placeholder="Sila isi jenis aktiviti...">
+                                </div>
                             </div>
                             <button type="submit" class="btn-primary">Simpan Jadual Doa</button>
                         </form>
@@ -185,7 +194,7 @@
                         <form id="formKhas">
                             <h4>Ibadah Khas / Perayaan</h4>
                             <div class="form-row">
-                                <div class="form-group"><label>Nama Event</label><input type="text" id="valKhasName" required></div>
+                                <div class="form-group"><label>Jenis / Tajuk Ibadah</label><input type="text" id="valKhasName" required placeholder="Contoh: Jumaat Agung"></div>
                                 <div class="form-group"><label>Tarikh</label><input type="date" id="dateKhas" required></div>
                             </div>
                             <div class="form-row">
@@ -197,8 +206,9 @@
                                 <div class="form-group"><label>Doa PKK</label><select class="member-select" id="valKhasDoaPKK"></select></div>
                             </div>
                             <div class="form-group"><label>Penyambut Tetamu</label><select class="member-select" id="valKhasUsher"></select></div>
+                            
                             <div class="form-group checkbox-group">
-                                <input type="checkbox" id="checkPerjamuanKhas" onchange="togglePerjamuan('divPerjamuanKhas')"> <label>Ada Perjamuan?</label>
+                                <input type="checkbox" id="checkPerjamuanKhas" onchange="togglePerjamuan('divPerjamuanKhas')"> <label>Ada Perjamuan Kudus?</label>
                             </div>
                             <div id="divPerjamuanKhas" class="hidden form-row">
                                 <div class="form-group"><label>Ketua PK</label><select class="member-select" id="valKhasPK"></select></div>
@@ -215,11 +225,12 @@
                                     <div class="form-group"><label>Ayat (PB)</label><input type="text" id="valKhasVerseNT"></div>
                                 </div>
                             </fieldset>
-                            <div class="form-group"><label>Nota</label><textarea id="valKhasNote" rows="2"></textarea></div>
+                            <div class="form-group"><label>Nota Tambahan</label><textarea id="valKhasNote" rows="2"></textarea></div>
                             <button type="submit" class="btn-primary">Simpan Ibadah Khas</button>
                         </form>
                     </div>
                 </div>
+
                 <div id="tab-urus-cabang" class="content-tab">
                     <form id="formCabang">
                         <h3>Jadual Cabang Pelayanan</h3>
@@ -247,6 +258,7 @@
                         <button type="submit" class="btn-primary">Simpan Jadual Cabang</button>
                     </form>
                 </div>
+
                 <div id="tab-profile" class="content-tab">
                     <h3>Tukar Kata Laluan</h3>
                     <div class="card-form" style="max-width:500px">
@@ -256,7 +268,8 @@
                         </form>
                     </div>
                 </div>
-                </main>
+
+            </main>
         </div>
     </section>
 
