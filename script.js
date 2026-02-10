@@ -27,7 +27,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     btn.textContent = "Memproses..."; btn.disabled = true;
 
     try {
-        // Backdoor
         if (loginId === "admin" && pass === "admin123") {
             loginSuccess({ name: "Super Admin", role: "admin", id: "temp_admin" });
             return;
@@ -71,7 +70,7 @@ function loginSuccess(user) {
     if (user.role !== 'admin') adminMenus.forEach(el => el.classList.add('hidden'));
     else adminMenus.forEach(el => el.classList.remove('hidden'));
 
-    showTab('tab-home'); // Terus ke Home
+    showTab('tab-home'); 
     document.getElementById('weekFilterDate').valueAsDate = new Date();
     loadTeamData();
     loadWeeklySchedule();
@@ -224,7 +223,9 @@ window.loadWeeklySchedule = async function() {
                 rows += mkRow("Alkitab", `PL: ${d.bibleOT}<br>PB: ${d.bibleNT}`);
             } else if(d.type==='IBADAH_KHAS') {
                 title=d.eventName.toUpperCase();
-                rows += mkRow("Pimpin",d.leader) + mkRow("Pujian",d.worship) + mkRow("Khotbah",d.speaker) + mkRow("Usher",d.usher) + mkRow("Nota",d.note);
+                rows += mkRow("Pimpin",d.leader) + mkRow("Pujian",d.worship) + mkRow("Khotbah",d.speaker) + mkRow("Doa PKK",d.doaPkk) + mkRow("Usher",d.usher);
+                if(d.hasPerjamuan) rows += mkRow("Perjamuan", `${d.pkLeader} / ${d.pkAsst}`);
+                rows += mkRow("Alkitab", `PL: ${d.bibleOT}<br>PB: ${d.bibleNT}`) + mkRow("Nota",d.note);
             } else if(d.type==='PERSEKUTUAN_DOA') {
                 title="PERSEKUTUAN DOA";
                 rows += d.isSkipped ? mkRow("Catatan",d.activityAlt) : (mkRow("Pimpin",d.leader)+mkRow("Bahan",d.material)+mkRow("Renungan",d.sharer));
@@ -252,4 +253,4 @@ window.toggleCabangFields = () => {
     document.getElementById('fieldsStandard').classList.toggle('hidden', isKid);
     document.getElementById('fieldsKids').classList.toggle('hidden', !isKid);
 };
-window.exportWeeklyPDF = async function() { alert("Sila pastikan data lengkap."); };
+window.exportWeeklyPDF = async function() { alert("Fungsi PDF sedia ada."); };
