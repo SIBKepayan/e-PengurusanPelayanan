@@ -1,3 +1,19 @@
+// --- PASTE FIREBASE CONFIG DISINI (WAJIB GANTI DENGAN KOD ANDA) ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDHDKX19CUX2OhxTRxX_nOSUxXdkXbC4vY",
+  authDomain: "e-ppsibkepayan.firebaseapp.com",
+  projectId: "e-ppsibkepayan",
+  storageBucket: "e-ppsibkepayan.firebasestorage.app",
+  messagingSenderId: "872979610754",
+  appId: "1:872979610754:web:163493d0f253dd8319089b",
+  measurementId: "G-QN7MP7EHVY"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+};
+
 // --- DATA MOCKUP ---
 const mockMembers = [
     { id: 1, name: "Bro. Jason", phone: "012-3456789", status: "Aktif" },
