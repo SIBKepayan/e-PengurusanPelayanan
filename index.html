@@ -41,7 +41,7 @@
                     <img src="logo.png" alt="Logo Kecil">
                     <div>
                         <h4>SIB Kepayan</h4>
-                        <p id="user-role-display">Role</p>
+                        <p id="user-role-display">User</p>
                     </div>
                 </div>
                 <ul class="menu">
@@ -89,7 +89,7 @@
                             <div class="form-row">
                                 <div class="form-group"><label>Jawatan</label>
                                     <select id="teamRole" required>
-                                        <option value="">-- Pilih Jawatan --</option>
+                                        <option value="">-- Pilih --</option>
                                         <option value="Ahli Majlis Gereja">Ahli Majlis Gereja</option>
                                         <option value="Pengerusi Cabang Pelayanan">Pengerusi Cabang Pelayanan</option>
                                         <option value="Koordinator Kelompok Sel">Koordinator Kelompok Sel</option>
@@ -97,13 +97,13 @@
                                         <option value="P. Wanita">P. Wanita</option>
                                         <option value="PKK">PKK (Kanak-Kanak)</option>
                                         <option value="P. Wira">P. Wira</option>
-                                        <option value="MASM">MASM (Media/Audio)</option>
+                                        <option value="MASM">MASM</option>
                                     </select>
                                 </div>
                                 <div class="form-group"><label>Status</label>
                                     <select id="teamStatus" required>
                                         <option value="Aktif">Aktif</option>
-                                        <option value="Cuti/Rehat Pelayanan">Cuti/Rehat Pelayanan</option>
+                                        <option value="Cuti/Rehat Pelayanan">Cuti/Rehat</option>
                                         <option value="Tidak Aktif">Tidak Aktif</option>
                                     </select>
                                 </div>
@@ -142,16 +142,13 @@
                                 <div class="form-group"><label>Doa PKK</label><select class="member-select" id="valAhadDoaPKK"></select></div>
                             </div>
                             <div class="form-group"><label>Penyambut Tetamu</label><select class="member-select" id="valAhadUsher"></select></div>
-                            
                             <div class="form-group checkbox-group">
-                                <input type="checkbox" id="checkPerjamuan" onchange="togglePerjamuan('divPerjamuan')">
-                                <label>Ada Perjamuan Kudus?</label>
+                                <input type="checkbox" id="checkPerjamuan" onchange="togglePerjamuan('divPerjamuan')"> <label>Ada Perjamuan Kudus?</label>
                             </div>
                             <div id="divPerjamuan" class="hidden form-row">
                                 <div class="form-group"><label>Ketua PK</label><select class="member-select" id="valAhadPK"></select></div>
                                 <div class="form-group"><label>Pembantu PK</label><select class="member-select" id="valAhadAsstPK"></select></div>
                             </div>
-
                             <fieldset>
                                 <legend>Pembacaan Alkitab</legend>
                                 <div class="form-row">
@@ -163,7 +160,7 @@
                                     <div class="form-group"><label>Ayat (PB)</label><input type="text" id="valVerseNT" placeholder="Cth: Matius 1:1"></div>
                                 </div>
                             </fieldset>
-                            <button type="submit" class="btn-primary">Simpan Jadual Ahad</button>
+                            <button type="submit" class="btn-primary">Simpan Ahad</button>
                         </form>
                     </div>
 
@@ -172,8 +169,7 @@
                             <h4>Jadual Persekutuan Doa</h4>
                             <div class="form-group"><label>Tarikh</label><input type="date" id="dateDoa" required></div>
                             <div class="form-group checkbox-group">
-                                <input type="checkbox" id="checkNoDoa" onchange="toggleDoaAlt()">
-                                <label>Tiada Persekutuan / Aktiviti Lain</label>
+                                <input type="checkbox" id="checkNoDoa" onchange="toggleDoaAlt()"> <label>Tiada Persekutuan</label>
                             </div>
                             <div id="divDoaNormal">
                                 <div class="form-group"><label>Pimpin Doa</label><select class="member-select" id="valDoaLeader"></select></div>
@@ -181,9 +177,9 @@
                                 <div class="form-group"><label>Renungan</label><select class="member-select" id="valDoaSharer"></select></div>
                             </div>
                             <div id="divDoaAlt" class="hidden">
-                                <div class="form-group"><label>Nama Aktiviti</label><input type="text" id="valDoaActivity"></div>
+                                <div class="form-group"><label>Catatan</label><input type="text" id="valDoaActivity"></div>
                             </div>
-                            <button type="submit" class="btn-primary">Simpan Jadual Doa</button>
+                            <button type="submit" class="btn-primary">Simpan Doa</button>
                         </form>
                     </div>
 
@@ -191,7 +187,7 @@
                         <form id="formKhas">
                             <h4>Ibadah Khas / Perayaan</h4>
                             <div class="form-row">
-                                <div class="form-group"><label>Nama Perayaan</label><input type="text" id="valKhasName" required></div>
+                                <div class="form-group"><label>Nama Event</label><input type="text" id="valKhasName" required></div>
                                 <div class="form-group"><label>Tarikh</label><input type="date" id="dateKhas" required></div>
                             </div>
                             <div class="form-row">
@@ -203,29 +199,25 @@
                                 <div class="form-group"><label>Doa PKK</label><select class="member-select" id="valKhasDoaPKK"></select></div>
                             </div>
                             <div class="form-group"><label>Penyambut Tetamu</label><select class="member-select" id="valKhasUsher"></select></div>
-                            
                             <div class="form-group checkbox-group">
-                                <input type="checkbox" id="checkPerjamuanKhas" onchange="togglePerjamuan('divPerjamuanKhas')">
-                                <label>Ada Perjamuan Kudus?</label>
+                                <input type="checkbox" id="checkPerjamuanKhas" onchange="togglePerjamuan('divPerjamuanKhas')"> <label>Ada Perjamuan?</label>
                             </div>
                             <div id="divPerjamuanKhas" class="hidden form-row">
                                 <div class="form-group"><label>Ketua PK</label><select class="member-select" id="valKhasPK"></select></div>
                                 <div class="form-group"><label>Pembantu PK</label><select class="member-select" id="valKhasAsstPK"></select></div>
                             </div>
-
                             <fieldset>
                                 <legend>Pembacaan Alkitab</legend>
                                 <div class="form-row">
                                     <div class="form-group"><label>Nama (PL)</label><select class="member-select" id="valKhasReaderOT"></select></div>
-                                    <div class="form-group"><label>Ayat (PL)</label><input type="text" id="valKhasVerseOT" placeholder="Cth: Kejadian 1:1"></div>
+                                    <div class="form-group"><label>Ayat (PL)</label><input type="text" id="valKhasVerseOT"></div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group"><label>Nama (PB)</label><select class="member-select" id="valKhasReaderNT"></select></div>
-                                    <div class="form-group"><label>Ayat (PB)</label><input type="text" id="valKhasVerseNT" placeholder="Cth: Matius 1:1"></div>
+                                    <div class="form-group"><label>Ayat (PB)</label><input type="text" id="valKhasVerseNT"></div>
                                 </div>
                             </fieldset>
-
-                            <div class="form-group"><label>Nota Tambahan</label><textarea id="valKhasNote" rows="2"></textarea></div>
+                            <div class="form-group"><label>Nota</label><textarea id="valKhasNote" rows="2"></textarea></div>
                             <button type="submit" class="btn-primary">Simpan Ibadah Khas</button>
                         </form>
                     </div>
@@ -235,8 +227,7 @@
                     <form id="formCabang">
                         <h3>Jadual Cabang Pelayanan</h3>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label>Pilih Cabang</label>
+                            <div class="form-group"><label>Pilih Cabang</label>
                                 <select id="valCabangType" onchange="toggleCabangFields()" required>
                                     <option value="Wira">Pelayanan Wira</option>
                                     <option value="Wanita">Pelayanan Wanita</option>
@@ -256,19 +247,16 @@
                             <div class="form-group"><label>Kelas Tengah</label><select class="member-select" id="valKidsMid"></select></div>
                             <div class="form-group"><label>Kelas Kecil</label><select class="member-select" id="valKidsSmall"></select></div>
                         </div>
-                        <button type="submit" class="btn-primary">Simpan Jadual Cabang</button>
+                        <button type="submit" class="btn-primary">Simpan Cabang</button>
                     </form>
                 </div>
 
                 <div id="tab-profile" class="content-tab">
                     <h3>Tukar Kata Laluan</h3>
-                    <div class="card-form" style="max-width:500px">
+                    <div class="card-form">
                         <form id="formPassword">
-                            <div class="form-group">
-                                <label>Kata Laluan Baru</label>
-                                <input type="password" id="newPassword" required>
-                            </div>
-                            <button type="submit" class="btn-primary">Simpan Kata Laluan</button>
+                            <div class="form-group"><label>Kata Laluan Baru</label><input type="password" id="newPassword" required></div>
+                            <button type="submit" class="btn-primary">Tukar</button>
                         </form>
                     </div>
                 </div>
