@@ -1,4 +1,4 @@
-// --- IMPORT FIREBASE (WAJIB UNTUK BROWSER) ---
+// --- IMPORT FIREBASE ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -32,7 +32,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     btn.disabled = true;
 
     try {
-        // 1. BACKDOOR (ID SEMENTARA) - Jika Database Kosong
+        // 1. BACKDOOR (ID SEMENTARA)
         if (loginId === "admin" && pass === "admin123") {
             loginSuccess({ name: "Super Admin", role: "admin" });
             return;
@@ -52,7 +52,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         let userFound = false;
         snapshot.forEach(doc => {
             const data = doc.data();
-            // Default Password ialah No. Telefon
             if (data.phone === pass) {
                 userFound = true;
                 data.id = doc.id;
@@ -75,8 +74,17 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
 function loginSuccess(user) {
     currentUser = user;
+    
+    // --- PEMBETULAN SKRIN PUTIH DI SINI ---
+    // Sembunyikan Login
     document.getElementById('auth-page').classList.remove('active');
-    document.getElementById('dashboard-page').classList.remove('hidden');
+    
+    // Tunjukkan Dashboard (Wajib ada remove 'hidden' DAN add 'active')
+    const dashboard = document.getElementById('dashboard-page');
+    dashboard.classList.remove('hidden'); 
+    dashboard.classList.add('active'); // <--- INI YANG HILANG SEBELUM INI
+    
+    // Set Info User
     document.getElementById('username-display').textContent = user.name;
     document.getElementById('user-role-display').textContent = user.role.toUpperCase();
 
@@ -89,7 +97,9 @@ function loginSuccess(user) {
     }
 
     // Load Data
-    document.getElementById('weekFilterDate').valueAsDate = new Date();
+    const dateInput = document.getElementById('weekFilterDate');
+    if(dateInput) dateInput.valueAsDate = new Date();
+    
     loadTeamData();
 }
 
@@ -140,7 +150,6 @@ window.loadTeamData = async function() {
             m.id = doc.id;
             currentTeam.push(m);
             
-            // Table Row
             if(currentUser && currentUser.role === 'admin' && tbody) {
                 const row = `<tr>
                     <td>${m.name}</td>
@@ -154,7 +163,6 @@ window.loadTeamData = async function() {
                 tbody.innerHTML += row;
             }
 
-            // Dropdowns (Active Only)
             if (m.status === 'Aktif') {
                 selects.forEach(s => {
                     const opt = document.createElement('option');
@@ -301,7 +309,7 @@ document.getElementById('formCabang').addEventListener('submit', (e) => {
     saveScheduleToDB(data);
 });
 
-// --- MODULE 3: WEEKLY VIEW & PDF ---
+// --- MODULE 3: WEEKLY VIEW ---
 function getWeekRange(dateStr) {
     const curr = new Date(dateStr);
     const first = curr.getDate() - curr.getDay() + 1; 
@@ -351,8 +359,6 @@ window.loadWeeklySchedule = async function() {
             } else if(d.type === 'CABANG') {
                 html += rowHtml("Aktiviti", d.activity);
             }
-            // (Tambah logic display lain jika perlu ringkas)
-
             html += `</div>`;
             container.innerHTML += html;
         });
@@ -392,5 +398,4 @@ window.toggleCabangFields = () => {
 
 window.exportWeeklyPDF = async function() {
     alert("Fungsi PDF sedia ada. Sila pastikan data jadual lengkap.");
-    // (Kod PDF boleh ditambah penuh jika perlu)
 };
