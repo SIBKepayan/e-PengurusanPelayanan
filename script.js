@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// CONFIG (Gunakan yang sama seperti sebelum ini)
+// KONFIGURASI FIREBASE ANDA (Pastikan API Key ini betul)
 const firebaseConfig = {
   apiKey: "AIzaSyDHDKX19CUX2OhxTRxX_nOSUxXdkXbC4vY",
   authDomain: "e-ppsibkepayan.firebaseapp.com",
@@ -91,17 +91,25 @@ function initDashboard() {
     document.getElementById('username-display').textContent = currentUser.name;
     document.getElementById('user-role-display').textContent = currentUser.role.toUpperCase();
 
-    // 1. SEMBUNYIKAN SEMUA MENU DULU
-    const menus = ['menu-kehadiran', 'menu-tim', 'menu-ibadah', 'menu-cabang'];
-    menus.forEach(id => document.getElementById(id).style.display = 'none');
+    // 1. SENARAI MENU ID
+    const menuIds = ['menu-kehadiran', 'menu-tim', 'menu-ibadah', 'menu-cabang'];
+    
+    // 2. SEMBUNYIKAN SEMUA MENU DAHULU (RESET)
+    menuIds.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+    });
     
     document.getElementById('form-kehadiran-wrapper').classList.add('hidden');
     document.getElementById('super-admin-fields').classList.add('hidden');
 
-    // 2. TENTUKAN AKSES MENGIKUT ROLE
+    // 3. TENTUKAN AKSES (PEMBETULAN DI SINI)
     if (currentUser.role === 'super_admin') {
         // SUPER ADMIN: Nampak SEMUA Menu
-        menus.forEach(id => document.getElementById(id).style.display = 'flex');
+        menuIds.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'flex';
+        });
         
         // Super Admin Features
         document.getElementById('form-kehadiran-wrapper').classList.remove('hidden'); // Boleh isi kehadiran
@@ -109,11 +117,14 @@ function initDashboard() {
     } 
     else if (currentUser.role === 'council') {
         // AHLI MAJLIS: Nampak Tim, Ibadah, Cabang, Kehadiran (View Only)
-        menus.forEach(id => document.getElementById(id).style.display = 'flex');
+        ['menu-tim', 'menu-ibadah', 'menu-cabang', 'menu-kehadiran'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'flex';
+        });
         
         // Council Features
         document.getElementById('form-kehadiran-wrapper').classList.add('hidden'); // View Only Attendance
-        document.getElementById('super-admin-fields').classList.add('hidden'); // Tak boleh create user
+        document.getElementById('super-admin-fields').classList.add('hidden'); 
     }
     else if (currentUser.role === 'usher') {
         // USHER: Nampak Kehadiran Sahaja
