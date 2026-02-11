@@ -23,14 +23,14 @@
                 <form id="loginForm">
                     <div class="input-group">
                         <i class="fas fa-user"></i>
-                        <input type="text" id="loginId" placeholder="Nama Pengguna" required>
+                        <input type="text" id="loginId" placeholder="Nama Pengguna / No. Telefon" required>
                     </div>
                     <div class="input-group">
                         <i class="fas fa-lock"></i>
                         <input type="password" id="loginPass" placeholder="Kata Laluan" required>
                     </div>
                     <button type="submit" class="btn-login">LOG MASUK</button>
-                    <p class="login-note">Default Password Ahli Baru: 12345</p>
+                    <p class="login-note">Super Admin: AdminSIBK / sibkepayan2026</p>
                 </form>
             </div>
         </div>
@@ -72,7 +72,7 @@
                 <div id="tab-home" class="content-tab active">
                     <div class="toolbar">
                         <div class="date-filter">
-                            <label>Minggu:</label>
+                            <label>Pilih Minggu:</label>
                             <input type="date" id="weekFilterDate" onchange="loadWeeklySchedule()">
                         </div>
                         <button class="btn-primary" onclick="exportWeeklyPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>
@@ -84,27 +84,27 @@
                     <h3>Modul Kehadiran Jemaat</h3>
                     
                     <div id="form-kehadiran-wrapper" class="card-form hidden">
-                        <h4>Isi Kehadiran Baru</h4>
-                        <form id="formAttendance">
-                            <div class="form-row">
-                                <div class="form-group"><label>Tarikh</label><input type="date" id="attDate" required></div>
-                                <div class="form-group"><label>Jumlah PKK (Kanak-Kanak)</label><input type="number" id="attPKK" value="0" required></div>
-                                <div class="form-group"><label>Jumlah Jemaat Umum</label><input type="number" id="attUmum" value="0" required></div>
-                            </div>
-                            <button type="submit" class="btn-primary">Simpan Data</button>
+                        <h4>Rekod Kehadiran Baru</h4>
+                        <form id="formAttendance" style="display:flex; gap:20px; align-items:flex-end;">
+                            <div class="form-group" style="flex:1"><label>Tarikh</label><input type="date" id="attDate" required></div>
+                            <div class="form-group" style="flex:1"><label>Jumlah PKK</label><input type="number" id="attPKK" value="0" min="0"></div>
+                            <div class="form-group" style="flex:1"><label>Jumlah Umum</label><input type="number" id="attUmum" value="0" min="0"></div>
+                            <button type="submit" class="btn-primary" style="margin-bottom:20px;">Simpan</button>
                         </form>
                     </div>
 
                     <div class="card-form">
-                        <div class="toolbar" style="margin-bottom:20px; box-shadow:none; padding:0;">
-                            <h4>Analisis Kehadiran</h4>
-                            <select id="chartFilter" onchange="loadAttendanceChart()" style="padding:5px;">
-                                <option value="weekly">Mingguan (4 Minggu Terkini)</option>
-                                <option value="monthly">Bulanan (Tahun Ini)</option>
-                                <option value="yearly">Tahunan</option>
+                        <div class="toolbar" style="box-shadow:none; padding:0; margin-bottom:15px;">
+                            <h4>Statistik Kehadiran</h4>
+                            <select id="chartFilter" onchange="loadAttendanceChart()">
+                                <option value="weekly">Data Mingguan (Terkini)</option>
+                                <option value="monthly">Data Bulanan (Tahun Ini)</option>
+                                <option value="yearly">Data Tahunan</option>
                             </select>
                         </div>
-                        <canvas id="attendanceChart" style="max-height: 400px;"></canvas>
+                        <div style="height: 400px;">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -124,7 +124,7 @@
                                 <div class="form-group"><label>No. Telefon</label><input type="text" id="teamPhone" required></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label>Jawatan</label>
+                                <div class="form-group"><label>Jawatan Pelayanan</label>
                                     <select id="teamRole" required>
                                         <option value="">-- Pilih --</option>
                                         <option value="Ahli Majlis Gereja">Ahli Majlis Gereja</option>
@@ -134,8 +134,9 @@
                                         <option value="P. Wanita">P. Wanita</option>
                                         <option value="PKK">PKK (Kanak-Kanak)</option>
                                         <option value="P. Wira">P. Wira</option>
-                                        <option value="MASM">MASM</option>
-                                        <option value="Usher">Usher / Penyambut Tetamu</option>
+                                        <option value="MASM">MASM (Media/Audio)</option>
+                                        <option value="Usher">Usher (Penyambut Tetamu)</option>
+                                        <option value="AJK Pelayanan Kanak-Kanak">AJK Pelayanan Kanak-Kanak</option>
                                     </select>
                                 </div>
                                 <div class="form-group"><label>Status</label>
@@ -146,30 +147,33 @@
                                     </select>
                                 </div>
                             </div>
-                            <div id="super-admin-fields" class="hidden" style="background:#e3f2fd; padding:15px; border-radius:5px; margin-bottom:15px;">
-                                <h4>Tetapan Akaun Pengguna (Super Admin Sahaja)</h4>
+
+                            <div id="super-admin-fields" class="hidden" style="background:#e3f2fd; padding:15px; border-radius:5px; margin-top:10px;">
+                                <h4 style="color:#0056b3; border:none;">Tetapan Akses Sistem (Super Admin Sahaja)</h4>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Username (Biarkan kosong jika tiada akses)</label>
-                                        <input type="text" id="teamUsername" placeholder="Cth: sipai">
+                                        <label>Username (Untuk Login)</label>
+                                        <input type="text" id="teamUsername" placeholder="Biarkan kosong jika tiada akses">
                                     </div>
                                     <div class="form-group">
                                         <label>Password (Default: 12345)</label>
                                         <input type="text" id="teamPassword" placeholder="12345">
                                     </div>
                                     <div class="form-group">
-                                        <label>Jenis Akses</label>
+                                        <label>Tahap Akses</label>
                                         <select id="teamAccessLevel">
-                                            <option value="none">Tiada Akses Login</option>
-                                            <option value="council">Ahli Majlis Gereja</option>
-                                            <option value="usher">Usher</option>
+                                            <option value="none">Tiada Akses</option>
+                                            <option value="council">Ahli Majlis Gereja (Edit Data & Jadual)</option>
+                                            <option value="usher">Usher (Isi Kehadiran Sahaja)</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn-primary">Simpan Data</button>
-                            <button type="button" class="btn-secondary" onclick="resetTeamForm()">Batal</button>
+                            <div class="btn-group">
+                                <button type="submit" class="btn-primary">Simpan Data</button>
+                                <button type="button" class="btn-secondary" onclick="resetTeamForm()">Batal</button>
+                            </div>
                         </form>
                     </div>
 
@@ -190,7 +194,7 @@
 
                     <div id="sub-ahad" class="sub-tab active">
                         <form id="formAhad">
-                            <h4>Ibadah Umum Ahad</h4>
+                            <h4>Jadual Ibadah Umum Ahad</h4>
                             <div class="form-group"><label>Tarikh</label><input type="date" id="dateAhad" required></div>
                             <div class="form-row">
                                 <div class="form-group"><label>Pimpin Ibadah</label><select class="member-select" id="valAhadLeader"></select></div>
@@ -200,7 +204,8 @@
                                 <div class="form-group"><label>Khotbah</label><select class="member-select" id="valAhadSpeaker"></select></div>
                                 <div class="form-group"><label>Doa PKK</label><select class="member-select" id="valAhadDoaPKK"></select></div>
                             </div>
-                            <div class="form-group"><label>Penyambut Tetamu (Ahli Majlis/Wira/Wanita/Muda-Mudi/PKK Sahaja)</label><select class="usher-select" id="valAhadUsher"></select></div>
+                            
+                            <div class="form-group"><label>Penyambut Tetamu (Terhad)</label><select class="usher-select" id="valAhadUsher"></select></div>
                             
                             <div class="form-group checkbox-group"><input type="checkbox" id="checkPerjamuan" onchange="togglePerjamuan('divPerjamuan')"> <label>Perjamuan Kudus?</label></div>
                             <div id="divPerjamuan" class="hidden form-row">
@@ -231,7 +236,7 @@
                                 <div class="form-group"><label>Bahan Doa</label><select class="member-select" id="valDoaBahan"></select></div>
                                 <div class="form-group"><label>Renungan</label><select class="member-select" id="valDoaRenungan"></select></div>
                             </div>
-                            <div id="divDoaAlt" class="hidden"><div class="form-group"><label>Catatan</label><input type="text" id="valDoaActivity"></div></div>
+                            <div id="divDoaAlt" class="hidden"><div class="form-group"><label>Aktiviti / Catatan</label><input type="text" id="valDoaActivity"></div></div>
                             <button type="submit" class="btn-primary">Simpan Doa</button>
                         </form>
                     </div>
