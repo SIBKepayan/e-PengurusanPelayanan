@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// KONFIGURASI FIREBASE ANDA
+// CONFIG (Gunakan yang sama seperti sebelum ini)
 const firebaseConfig = {
   apiKey: "AIzaSyDHDKX19CUX2OhxTRxX_nOSUxXdkXbC4vY",
   authDomain: "e-ppsibkepayan.firebaseapp.com",
@@ -17,9 +17,9 @@ const db = getFirestore(app);
 
 let currentUser = null;
 let currentTeam = [];
-let attendanceChart = null; // Variable untuk carta
+let attendanceChart = null;
 
-// --- AUTO LOGIN (Simpan Sesi) ---
+// --- AUTO LOGIN ---
 window.addEventListener('DOMContentLoaded', () => {
     const savedUser = localStorage.getItem('sib_user');
     if (savedUser) {
@@ -28,7 +28,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// --- LOGIK LOGIN (3 ROLE) ---
+// --- LOGIN ---
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const loginId = document.getElementById('loginId').value.trim();
@@ -43,7 +43,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             return;
         }
 
-        // 2. CHECK DATABASE UNTUK PENGGUNA LAIN
+        // 2. CHECK DATABASE
         const q = query(collection(db, "team"), where("username", "==", loginId));
         const snapshot = await getDocs(q);
 
@@ -54,20 +54,18 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         let userFound = false;
         snapshot.forEach(doc => {
             const data = doc.data();
-            const actualPass = data.password || "12345"; // Default 12345
+            const actualPass = data.password || "12345"; 
             
             if (actualPass === pass) {
                 userFound = true;
                 data.id = doc.id;
                 
-                // TENTUKAN ROLE SISTEM BERDASARKAN DATABASE
                 let sysRole = 'none';
                 if(data.accessLevel === 'council') sysRole = 'council';
                 if(data.accessLevel === 'usher') sysRole = 'usher';
                 
                 if(sysRole === 'none') {
-                    alert("Akaun ini tiada akses sistem. Hubungi Super Admin.");
-                    btn.textContent = "LOG MASUK"; btn.disabled = false;
+                    alert("Akaun tiada akses."); btn.textContent = "LOG MASUK"; btn.disabled = false;
                 } else {
                     data.role = sysRole;
                     performLogin(data);
@@ -93,29 +91,37 @@ function initDashboard() {
     document.getElementById('username-display').textContent = currentUser.name;
     document.getElementById('user-role-display').textContent = currentUser.role.toUpperCase();
 
-    // HIDE ALL MENUS FIRST
-    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-    document.getElementById('menu-kehadiran').style.display = 'none';
-    document.getElementById('menu-tim').style.display = 'none';
-    document.getElementById('menu-ibadah').style.display = 'none';
-    document.getElementById('menu-cabang').style.display = 'none';
+    // 1. SEMBUNYIKAN SEMUA MENU DULU
+    const menus = ['menu-kehadiran', 'menu-tim', 'menu-ibadah', 'menu-cabang'];
+    menus.forEach(id => document.getElementById(id).style.display = 'none');
+    
+    document.getElementById('form-kehadiran-wrapper').classList.add('hidden');
+    document.getElementById('super-admin-fields').classList.add('hidden');
 
-    // SHOW MENUS BASED ON ROLE
+    // 2. TENTUKAN AKSES MENGIKUT ROLE
     if (currentUser.role === 'super_admin') {
-        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
-        document.getElementById('menu-kehadiran').style.display = 'flex';
-        document.getElementById('form-kehadiran-wrapper').classList.remove('hidden'); // Boleh isi
-        document.getElementById('super-admin-fields').classList.remove('hidden'); // Boleh create akaun
+        // SUPER ADMIN: Nampak SEMUA Menu
+        menus.forEach(id => document.getElementById(id).style.display = 'flex');
+        
+        // Super Admin Features
+        document.getElementById('form-kehadiran-wrapper').classList.remove('hidden'); // Boleh isi kehadiran
+        document.getElementById('super-admin-fields').classList.remove('hidden'); // Boleh create user
     } 
     else if (currentUser.role === 'council') {
-        document.getElementById('menu-tim').style.display = 'flex';
-        document.getElementById('menu-cabang').style.display = 'flex';
-        document.getElementById('menu-kehadiran').style.display = 'flex';
-        document.getElementById('form-kehadiran-wrapper').classList.add('hidden'); // VIEW ONLY attendance
+        // AHLI MAJLIS: Nampak Tim, Ibadah, Cabang, Kehadiran (View Only)
+        menus.forEach(id => document.getElementById(id).style.display = 'flex');
+        
+        // Council Features
+        document.getElementById('form-kehadiran-wrapper').classList.add('hidden'); // View Only Attendance
+        document.getElementById('super-admin-fields').classList.add('hidden'); // Tak boleh create user
     }
     else if (currentUser.role === 'usher') {
+        // USHER: Nampak Kehadiran Sahaja
         document.getElementById('menu-kehadiran').style.display = 'flex';
-        document.getElementById('form-kehadiran-wrapper').classList.remove('hidden'); // Boleh isi attendance
+        
+        // Usher Features
+        document.getElementById('form-kehadiran-wrapper').classList.remove('hidden'); // Boleh isi kehadiran
+        document.getElementById('super-admin-fields').classList.add('hidden');
     }
 
     showTab('tab-home'); 
@@ -142,11 +148,11 @@ window.switchSubTab = function(subId) {
     event.target.classList.add('active');
 }
 
-// --- DATA TIM & PENAPISAN USHER ---
+// --- DATA TIM ---
 window.loadTeamData = async function() {
     const tbody = document.querySelector('#teamTable tbody');
     const selects = document.querySelectorAll('.member-select');
-    const ushers = document.querySelectorAll('.usher-select'); // Dropdown Usher
+    const ushers = document.querySelectorAll('.usher-select');
     currentTeam = [];
     
     try {
@@ -168,16 +174,13 @@ window.loadTeamData = async function() {
                 </tr>`;
             }
 
-            // Isi Dropdown
             if(m.status === 'Aktif') {
-                // Semua AJK
                 selects.forEach(s => {
                     const opt = document.createElement('option'); opt.value=m.name; opt.textContent=m.name; s.appendChild(opt);
                 });
                 
-                // FILTER: Usher Sahaja (Ahli Majlis, Wira, Wanita, Muda-Mudi, PKK, Usher)
+                // Filter Usher
                 const allowed = ['Ahli Majlis Gereja','Pelayanan Wira','Pelayanan Wanita','PMM','PKK','AJK Pelayanan Kanak-Kanak','Usher'];
-                // Check if role is in allowed list OR includes "Usher"
                 if(allowed.includes(m.role) || m.role.includes("Usher")) {
                     ushers.forEach(s => {
                         const opt = document.createElement('option'); opt.value=m.name; opt.textContent=m.name; s.appendChild(opt);
@@ -210,7 +213,6 @@ document.getElementById('teamForm').addEventListener('submit', async(e)=>{
         status: document.getElementById('teamStatus').value,
     };
     
-    // Super Admin update account
     if(currentUser.role === 'super_admin') {
         const user = document.getElementById('teamUsername').value;
         const pass = document.getElementById('teamPassword').value;
@@ -243,7 +245,7 @@ window.editTeam = function(id) {
 }
 window.deleteTeam = async function(id) { if(confirm("Padam?")) { await deleteDoc(doc(db,"team",id)); loadTeamData(); } }
 
-// --- MODUL KEHADIRAN (CHART.JS) ---
+// --- KEHADIRAN ---
 document.getElementById('formAttendance').addEventListener('submit', async(e)=>{
     e.preventDefault();
     const pkk = parseInt(document.getElementById('attPKK').value);
@@ -251,20 +253,16 @@ document.getElementById('formAttendance').addEventListener('submit', async(e)=>{
     const total = pkk + umum;
     const data = {
         date: document.getElementById('attDate').value,
-        pkk: pkk,
-        umum: umum,
-        total: total
+        pkk: pkk, umum: umum, total: total
     };
-    try { await addDoc(collection(db,"attendance"),data); alert("Kehadiran Disimpan!"); loadAttendanceChart(); }
+    try { await addDoc(collection(db,"attendance"),data); alert("Disimpan!"); loadAttendanceChart(); }
     catch(e){alert(e.message)}
 });
 
 window.loadAttendanceChart = async function() {
     const q = query(collection(db, "attendance"), orderBy("date"));
     const snap = await getDocs(q);
-    
-    let labels = [];
-    let dataSet = [];
+    let labels = [], dataSet = [];
     
     snap.forEach(doc => {
         const d = doc.data();
@@ -281,24 +279,21 @@ window.loadAttendanceChart = async function() {
             datasets: [{
                 label: 'Jumlah Kehadiran',
                 data: dataSet,
-                backgroundColor: '#009FE3',
-                borderColor: '#0056b3',
-                borderWidth: 1
+                backgroundColor: '#009FE3'
             }]
         },
         options: { scales: { y: { beginAtZero: true } } }
     });
 }
 
-// --- JADUAL & PDF ---
-// (Menggunakan kod standard yang telah dipersetujui)
+// --- JADUAL ---
 async function saveSch(data) { try { await addDoc(collection(db,"schedules"),data); alert("Disimpan!"); document.querySelectorAll('form').forEach(f=>f.reset()); loadWeeklySchedule(); } catch(e){alert(e.message)} }
 document.getElementById('formAhad').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'IBADAH_AHAD', date:document.getElementById('dateAhad').value, leader:document.getElementById('valAhadLeader').value, worship:document.getElementById('valAhadWorship').value, speaker:document.getElementById('valAhadSpeaker').value, doaPkk:document.getElementById('valAhadDoaPKK').value, usher:document.getElementById('valAhadUsher').value, hasPerjamuan:document.getElementById('checkPerjamuan').checked, pkLeader:document.getElementById('valAhadPK').value, pkAsst:document.getElementById('valAhadAsstPK').value, bibleOT:`${document.getElementById('valReaderOT').value} (${document.getElementById('valVerseOT').value})`, bibleNT:`${document.getElementById('valReaderNT').value} (${document.getElementById('valVerseNT').value})` })});
 document.getElementById('formKhas').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'IBADAH_KHAS', eventName:document.getElementById('valKhasName').value, date:document.getElementById('dateKhas').value, leader:document.getElementById('valKhasLeader').value, worship:document.getElementById('valKhasWorship').value, speaker:document.getElementById('valKhasSpeaker').value, doaPkk:document.getElementById('valKhasDoaPKK').value, usher:document.getElementById('valKhasUsher').value, hasPerjamuan:document.getElementById('checkPerjamuanKhas').checked, pkLeader:document.getElementById('valKhasPK').value, pkAsst:document.getElementById('valKhasAsstPK').value, bibleOT:`${document.getElementById('valKhasReaderOT').value} (${document.getElementById('valKhasVerseOT').value})`, bibleNT:`${document.getElementById('valKhasReaderNT').value} (${document.getElementById('valKhasVerseNT').value})`, note:document.getElementById('valKhasNote').value })});
 document.getElementById('formDoa').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'PERSEKUTUAN_DOA', date:document.getElementById('dateDoa').value, isSkipped:document.getElementById('checkNoDoa').checked, activityAlt:document.getElementById('valDoaActivity').value, leader:document.getElementById('valDoaPujian').value, material:document.getElementById('valDoaBahan').value, sharer:document.getElementById('valDoaRenungan').value })});
 document.getElementById('formCabang').addEventListener('submit', (e)=>{ e.preventDefault(); saveSch({ type:'CABANG', subType:document.getElementById('valCabangType').value, date:document.getElementById('dateCabang').value, activity:document.getElementById('valCabangActivity').value, pujian:document.getElementById('valCabangPujian').value, renungan:document.getElementById('valCabangRenungan').value, kidBig:document.getElementById('valKidsBig').value, kidMid:document.getElementById('valKidsMid').value, kidSmall:document.getElementById('valKidsSmall').value })});
 function getWeekRange(d) { const c=new Date(d); const f=c.getDate()-c.getDay()+1; const l=f+6; return { mon:new Date(c.setDate(f)).toISOString().split('T')[0], sun:new Date(c.setDate(l)).toISOString().split('T')[0] }; }
-window.loadWeeklySchedule = async function() { const inp = document.getElementById('weekFilterDate').value; if(!inp) return; const {mon, sun} = getWeekRange(inp); const div = document.getElementById('weekly-schedule-container'); div.innerHTML = `<p style="text-align:center">Memuat...</p>`; try { const q = query(collection(db,"schedules"), where("date",">=",mon), where("date","<=",sun), orderBy("date")); const snap = await getDocs(q); div.innerHTML = `<h3 style="text-align:center; color:#009FE3; margin-bottom:15px">Minggu: ${mon} - ${sun}</h3>`; if(snap.empty) { div.innerHTML += "<p style='text-align:center'>Tiada jadual.</p>"; return; } snap.forEach(doc => { const d = doc.data(); let title="", rows=""; if(d.type==='IBADAH_AHAD') { title="IBADAH UMUM AHAD"; rows = `<tr><td width="30%"><b>Pimpin</b></td><td>${d.leader}</td></tr><tr><td><b>Pujian</b></td><td>${d.worship}</td></tr><tr><td><b>Khotbah</b></td><td>${d.speaker}</td></tr><tr><td><b>Doa PKK</b></td><td>${d.doaPkk}</td></tr><tr><td><b>Usher</b></td><td>${d.usher}</td></tr>` + (d.hasPerjamuan ? `<tr><td><b>Perjamuan</b></td><td>${d.pkLeader} / ${d.pkAsst}</td></tr>`:'') + `<tr><td><b>Alkitab</b></td><td>PL: ${d.bibleOT}<br>PB: ${d.bibleNT}</td></tr>`; } else if(d.type==='IBADAH_KHAS') { title=d.eventName.toUpperCase(); rows = `<tr><td><b>Pimpin</b></td><td>${d.leader}</td></tr><tr><td><b>Pujian</b></td><td>${d.worship}</td></tr><tr><td><b>Khotbah</b></td><td>${d.speaker}</td></tr><tr><td><b>Usher</b></td><td>${d.usher}</td></tr>` + (d.hasPerjamuan ? `<tr><td><b>Perjamuan</b></td><td>${d.pkLeader} / ${d.pkAsst}</td></tr>`:'') + `<tr><td><b>Alkitab</b></td><td>PL: ${d.bibleOT}<br>PB: ${d.bibleNT}</td></tr><tr><td><b>Nota</b></td><td>${d.note}</td></tr>`; } else if(d.type==='PERSEKUTUAN_DOA') { title="PERSEKUTUAN DOA"; rows = d.isSkipped ? `<tr><td><b>Info</b></td><td>${d.activityAlt}</td></tr>` : `<tr><td><b>Pimpin Pujian</b></td><td>${d.leader}</td></tr><tr><td><b>Bahan Doa</b></td><td>${d.material}</td></tr><tr><td><b>Renungan</b></td><td>${d.sharer}</td></tr>`; } else if(d.type==='CABANG') { title=d.subType.toUpperCase(); rows = d.subType==='Kanak-Kanak' ? `<tr><td><b>Besar</b></td><td>${d.kidBig}</td></tr><tr><td><b>Tengah</b></td><td>${d.kidMid}</td></tr><tr><td><b>Kecil</b></td><td>${d.kidSmall}</td></tr>` : `<tr><td><b>Aktiviti</b></td><td>${d.activity}</td></tr><tr><td><b>Pujian</b></td><td>${d.pujian}</td></tr><tr><td><b>Renungan</b></td><td>${d.renungan}</td></tr>`; } let btn = (currentUser?.role === 'super_admin' || currentUser?.role === 'council') ? `<button class="btn-danger" style="float:right" onclick="deleteSchedule('${doc.id}')">Padam</button>` : ""; div.innerHTML += `<div class="schedule-table-container"><div class="schedule-header"><h4>${title} <small>(${d.date})</small></h4>${btn}</div><table class="schedule-table">${rows}</table></div>`; }); } catch(e){console.error(e)} }
+window.loadWeeklySchedule = async function() { const inp = document.getElementById('weekFilterDate').value; if(!inp) return; const {mon, sun} = getWeekRange(inp); const div = document.getElementById('weekly-schedule-container'); div.innerHTML = `<p style="text-align:center">Memuat...</p>`; try { const q = query(collection(db,"schedules"), where("date",">=",mon), where("date","<=",sun), orderBy("date")); const snap = await getDocs(q); div.innerHTML = `<h3 style="text-align:center; color:#009FE3; margin-bottom:15px">Minggu: ${mon} - ${sun}</h3>`; if(snap.empty) { div.innerHTML += "<p style='text-align:center'>Tiada jadual.</p>"; return; } snap.forEach(doc => { const d = doc.data(); let title="", rows=""; if(d.type==='IBADAH_AHAD') { title="IBADAH UMUM AHAD"; rows = `<tr><td width="30%"><b>Pimpin</b></td><td>${d.leader}</td></tr><tr><td><b>Pujian</b></td><td>${d.worship}</td></tr><tr><td><b>Khotbah</b></td><td>${d.speaker}</td></tr><tr><td><b>Doa PKK</b></td><td>${d.doaPkk}</td></tr><tr><td><b>Usher</b></td><td>${d.usher}</td></tr>` + (d.hasPerjamuan ? `<tr><td><b>Perjamuan</b></td><td>${d.pkLeader} / ${d.pkAsst}</td></tr>`:'') + `<tr><td><b>Alkitab</b></td><td>PL: ${d.bibleOT}<br>PB: ${d.bibleNT}</td></tr>`; } else if(d.type==='IBADAH_KHAS') { title=d.eventName.toUpperCase(); rows = `<tr><td><b>Pimpin</b></td><td>${d.leader}</td></tr><tr><td><b>Pujian</b></td><td>${d.worship}</td></tr><tr><td><b>Khotbah</b></td><td>${d.speaker}</td></tr><tr><td><b>Usher</b></td><td>${d.usher}</td></tr>` + (d.hasPerjamuan ? `<tr><td><b>Perjamuan</b></td><td>${d.pkLeader} / ${d.pkAsst}</td></tr>`:'') + `<tr><td><b>Alkitab</b></td><td>PL: ${d.bibleOT}<br>PB: ${d.bibleNT}</td></tr><tr><td><b>Nota</b></td><td>${d.note}</td></tr>`; } else if(d.type==='PERSEKUTUAN_DOA') { title="PERSEKUTUAN DOA"; rows = d.isSkipped ? `<tr><td><b>Info</b></td><td>${d.activityAlt}</td></tr>` : `<tr><td><b>Pujian</b></td><td>${d.leader}</td></tr><tr><td><b>Bahan Doa</b></td><td>${d.material}</td></tr><tr><td><b>Renungan</b></td><td>${d.sharer}</td></tr>`; } else if(d.type==='CABANG') { title=d.subType.toUpperCase(); rows = d.subType==='Kanak-Kanak' ? `<tr><td><b>Besar</b></td><td>${d.kidBig}</td></tr><tr><td><b>Tengah</b></td><td>${d.kidMid}</td></tr><tr><td><b>Kecil</b></td><td>${d.kidSmall}</td></tr>` : `<tr><td><b>Aktiviti</b></td><td>${d.activity}</td></tr><tr><td><b>Pujian</b></td><td>${d.pujian}</td></tr><tr><td><b>Renungan</b></td><td>${d.renungan}</td></tr>`; } let btn = (currentUser?.role === 'super_admin' || currentUser?.role === 'council') ? `<button class="btn-danger" style="float:right" onclick="deleteSchedule('${doc.id}')">Padam</button>` : ""; div.innerHTML += `<div class="schedule-table-container"><div class="schedule-header"><h4>${title} <small>(${d.date})</small></h4>${btn}</div><table class="schedule-table">${rows}</table></div>`; }); } catch(e){console.error(e)} }
 window.deleteSchedule = async function(id) { if(confirm("Padam?")) { await deleteDoc(doc(db,"schedules",id)); loadWeeklySchedule(); } }
 window.togglePerjamuan = (id) => document.getElementById(id).classList.toggle('hidden');
 window.toggleDoaAlt = () => { document.getElementById('divDoaNormal').classList.toggle('hidden'); document.getElementById('divDoaAlt').classList.toggle('hidden'); };
