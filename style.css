@@ -10,12 +10,13 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-/* FORCE DESKTOP WIDTH ON MOBILE */
+/* --- FORCE DESKTOP ON MOBILE --- */
 body { 
     background: var(--bg-color); 
     color: var(--text-color); 
     font-size: 14px; 
-    min-width: 1024px; /* Ini kuncinya! */
+    /* Lebar tetap supaya paparan tak lari di telefon */
+    min-width: 1280px; 
     overflow-x: auto;
 }
 
